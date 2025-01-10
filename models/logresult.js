@@ -1,12 +1,20 @@
 class LogResult {
-  constructor() {
-    this.device_id = null;
-    this.time = null;
-    this.driver_id = null;
-    this.drive_name = null;
-    this.certificate_number = null;
-    this.is_match = true;
-    this.photopath = "";
+  constructor(
+    device_id,
+    time,
+    driver_id,
+    driver_name,
+    certificate_number,
+    is_match = true,
+    photopath
+  ) {
+    this.device_id = device_id;
+    this.time = time;
+    this.driver_id = driver_id;
+    this.driver_name = driver_name;
+    this.certificate_number = certificate_number;
+    this.is_match = is_match;
+    this.photopath = photopath;
   }
 
   static create({
@@ -15,7 +23,7 @@ class LogResult {
     driver_id,
     driver_name,
     certificate_number,
-    is_match,
+    is_match = true,
     photopath,
   }) {
     return new LogResult({
