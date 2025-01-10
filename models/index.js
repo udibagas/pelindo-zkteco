@@ -27,6 +27,45 @@ class Model {
 
     return LogResult.create(rows[0]);
   }
+
+  static async getLastDataByDevice(device) {
+    const query = `
+      SELECT
+        t.id as id,
+        t.dev_id as device_id,
+        t.event_time as time,
+        t.pin as driver_id,
+        t.name as driver_name,
+        -- t.certificate_number, 
+        t.vid_linkage_handle as photopath
+      FROM acc_transaction t
+      JOIN pers_person p ON t.pin = p.pin
+      WHERE t.dev_alias = $1
+      ORDER BY t.event_time DESC
+      LIMIT 1
+    `;
+
+    const { rows, rowCount } = await pool.query(query, [device]);
+
+    if (rowCount === 0) {
+      return null;
+    }
+
+    return LogResult.create(rows[0]);
+  }
+
+  static async getLastDataAllDevice() {
+    const data = [];
+    const query = `SELECT dev_alias FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
+    const { rows } = await pool.query(query);
+
+    for (const row of rows) {
+      const lastData = await this.getLastDataByDevice(row.dev_alias);
+      data.push(lastData);
+    }
+
+    return data;
+  }
 }
 
 module.exports = Model;

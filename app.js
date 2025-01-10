@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/getLastData", basicAuth, async (req, res) => {
-  const lastData = await Model.getLastTransaction();
+  const lastData = await Model.getLastDataAllDevice();
   res.status(200).json(lastData);
 });
 
