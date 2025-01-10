@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const fs = require("fs");
 const Model = require("./models");
 const { default: axios } = require("axios");
 const basicAuth = require("./middleware/auth");
@@ -18,7 +19,7 @@ app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-let lastId = null;
+let lastId = await fs.promises.readFile("./lastId.txt", "utf-8");
 
 setInterval(async () => {
   const lastData = await Model.getLastTransaction();
@@ -31,7 +32,14 @@ setInterval(async () => {
     return;
   }
 
+  // kalau waktu terakhir jeda lebih dari 5 detik return
+  if (new Date().getTime() - lastData.time.getTime() > 5000) {
+    return;
+  }
+
   lastId = lastData.id;
+  fs.promises.writeFile("./lastId.txt", lastId);
+
   console.log("New data found", lastData);
 
   const { API_URL, API_USER: username, API_PASS: password } = process.env;
