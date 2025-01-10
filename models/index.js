@@ -8,7 +8,7 @@ class Model {
         *
       FROM acc_transaction t
       JOIN pers_person p ON t.pin = p.pin
-      ORDER BY id DESC
+      ORDER BY t.event_time DESC
       LIMIT 1
     `;
 
