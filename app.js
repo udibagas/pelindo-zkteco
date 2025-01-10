@@ -35,7 +35,12 @@ setInterval(async () => {
   console.log(lastData);
 
   const { API_URL, API_USER: username, API_PASS: password } = process.env;
-  // await axios.post(API_URL, lastData, {
-  //   auth: { username, password },
-  // });
-}, 3000);
+  try {
+    const res = await axios.post(API_URL, lastData, {
+      auth: { username, password },
+    });
+    console.log("Data sent to API", res.data);
+  } catch (error) {
+    console.error("Error sending data to API", error);
+  }
+}, +process.env.POLL_INTERVAL);
