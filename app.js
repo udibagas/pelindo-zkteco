@@ -6,12 +6,16 @@ const { default: axios } = require("axios");
 const basicAuth = require("./middleware/auth");
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("What's up!");
 });
 
-app.get("/api/getLastData", basicAuth, async (req, res) => {
-  const lastData = await Model.getLastDataAllDevice();
+app.post("/api/getLastData", basicAuth, async (req, res) => {
+  const { dev_alias } = req.body;
+  const lastData = await Model.getLastDataByDevice(dev_alias);
   res.status(200).json(lastData);
 });
 
