@@ -1,5 +1,6 @@
 class LogResult {
   constructor(
+    id,
     device_id,
     time,
     driver_id,
@@ -8,6 +9,7 @@ class LogResult {
     is_match = true,
     photopath
   ) {
+    this.id = id;
     this.device_id = device_id;
     this.time = time;
     this.driver_id = driver_id;
@@ -18,6 +20,7 @@ class LogResult {
   }
 
   static create({
+    id,
     device_id,
     time,
     driver_id,
@@ -26,15 +29,16 @@ class LogResult {
     is_match = true,
     photopath,
   }) {
-    return new LogResult({
+    return new LogResult(
+      id,
       device_id,
       time,
       driver_id,
       driver_name,
       certificate_number,
       is_match,
-      photopath,
-    });
+      photopath
+    );
   }
 }
 
