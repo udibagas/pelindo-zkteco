@@ -37,7 +37,10 @@ fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
     }
 
     // kalau waktu terakhir jeda lebih dari 5 detik return
-    if (new Date().getTime() - lastData.time.getTime() > 10000) {
+    const diff = new Date().getTime() - lastData.time.getTime();
+    console.log(diff);
+
+    if (diff > 10000) {
       console.log("Data is too old", lastData);
       return;
     }
