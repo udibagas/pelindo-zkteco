@@ -25,7 +25,6 @@ class Model {
       return null;
     }
 
-    console.log(rows[0]);
     return LogResult.create(rows[0]);
   }
 }
