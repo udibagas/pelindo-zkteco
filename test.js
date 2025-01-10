@@ -1,8 +1,8 @@
 const pool = require("./config/db");
 
 const query = `
-  SELECT * F
-  ROM acc_transaction t
+  SELECT *
+  FROM acc_transaction t
   JOIN pers_person p ON t.pin = p.pin
   WHERE dev_alias ILIKE 'kiosk%'
   order by t.create_time desc
