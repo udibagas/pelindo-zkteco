@@ -24,12 +24,10 @@ setInterval(async () => {
   const lastData = await Model.getLastTransaction();
 
   if (lastData === null) {
-    console.log("No data found");
     return;
   }
 
   if (lastId === lastData.id) {
-    console.log("No new data");
     return;
   }
 
