@@ -5,10 +5,12 @@ class Model {
   static async getLastTransaction() {
     const query = `
       SELECT
+        t.id as id,
         t.dev_id as device_id,
         t.event_time as time,
+        t.pin as driver_id,
         t.name as driver_name,
-        t.certificate_number,
+        -- t.certificate_number, 
         t.vid_linkage_handle as photopath
       FROM acc_transaction t
       JOIN pers_person p ON t.pin = p.pin
