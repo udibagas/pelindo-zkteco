@@ -5,9 +5,14 @@ class Model {
   static async getLastTransaction() {
     const query = `
       SELECT
-        *
+        t.dev_id as device_id,
+        t.event_time as time,
+        t.name as driver_name,
+        t.certificate_number,
+        t.vid_linkage_handle as photopath
       FROM acc_transaction t
       JOIN pers_person p ON t.pin = p.pin
+      WHERE t.dev_alias ILIKE 'kiosk%'
       ORDER BY t.event_time DESC
       LIMIT 1
     `;
