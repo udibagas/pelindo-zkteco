@@ -24,18 +24,21 @@ setInterval(async () => {
   const lastData = await Model.getLastTransaction();
 
   if (lastData === null) {
+    console.log("No data found");
+    return;
+  }
+
+  if (lastId === lastData.id) {
+    console.log("No new data");
     return;
   }
 
   lastId = lastData.id;
-
-  if (lastId === lastData.id) {
-    return;
-  }
-
-  console.log(lastData);
+  console.log("New data found", lastData);
 
   const { API_URL, API_USER: username, API_PASS: password } = process.env;
+  console.log("Sending data to API", API_URL);
+
   try {
     const res = await axios.post(API_URL, lastData, {
       auth: { username, password },
