@@ -38,7 +38,7 @@ fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
 
     // kalau waktu terakhir jeda lebih dari 5 detik return
     const now = new Date().getTime();
-    const lastTime = lastData.time.getTime();
+    const lastTime = new Date(lastData.time).getTime();
     const diff = now - lastTime;
     // console.log(diff, lastTime, now);
 
