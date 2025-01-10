@@ -40,10 +40,10 @@ fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
     const now = new Date().getTime();
     const lastTime = lastData.time.getTime();
     const diff = now - lastTime;
-    console.log(diff, lastTime, now);
+    // console.log(diff, lastTime, now);
 
     if (diff > 5_000_000) {
-      console.log("Data is too old", lastData);
+      // console.log("Data is too old", lastData);
       return;
     }
 
