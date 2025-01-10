@@ -19,7 +19,7 @@ app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-fs.readFile("./lastId.txt", "utf-8", (err, data) => {
+fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
   if (err) {
     console.error("Error reading lastId.txt", err);
     return;
