@@ -2,13 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const Model = require("./models");
 const { default: axios } = require("axios");
+const basicAuth = require("./middleware/auth");
 const app = express();
 
 app.get("/", (req, res) => {
   res.send("What's up!");
 });
 
-app.get("/api/getLastData", async (req, res) => {
+app.get("/api/getLastData", basicAuth, async (req, res) => {
   const lastData = await Model.getLastTransaction();
   res.status(200).json(lastData);
 });
