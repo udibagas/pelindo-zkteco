@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 class LogResult {
   constructor(
     id,
@@ -11,7 +13,7 @@ class LogResult {
   ) {
     this.id = id;
     this.device_id = device_id;
-    this.time = time;
+    this.time = moment(time).format("YYYY-MM-DD HH:mm:ss");
     this.driver_id = driver_id;
     this.driver_name = driver_name;
     this.certificate_number = certificate_number;
