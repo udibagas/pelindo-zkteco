@@ -19,38 +19,41 @@ app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-let lastId = await fs.promises.readFile("./lastId.txt", "utf-8");
-
-setInterval(async () => {
-  const lastData = await Model.getLastTransaction();
-
-  if (lastData === null) {
+fs.readFile("./lastId.txt", "utf-8", (err, data) => {
+  if (err) {
+    console.error("Error reading lastId.txt", err);
     return;
   }
 
-  if (lastId === lastData.id) {
-    return;
-  }
+  setInterval(async () => {
+    const lastData = await Model.getLastTransaction();
 
-  // kalau waktu terakhir jeda lebih dari 5 detik return
-  if (new Date().getTime() - lastData.time.getTime() > 5000) {
-    return;
-  }
+    if (lastData === null) {
+      return;
+    }
 
-  lastId = lastData.id;
-  fs.promises.writeFile("./lastId.txt", lastId);
+    if (lastId === lastData.id) {
+      return;
+    }
 
-  console.log("New data found", lastData);
+    // kalau waktu terakhir jeda lebih dari 5 detik return
+    if (new Date().getTime() - lastData.time.getTime() > 5000) {
+      return;
+    }
 
-  const { API_URL, API_USER: username, API_PASS: password } = process.env;
-  console.log("Sending data to API", API_URL);
+    console.log("New data found", lastData);
+    const { API_URL, API_USER: username, API_PASS: password } = process.env;
+    console.log("Sending data to API", API_URL);
 
-  try {
-    const res = await axios.post(API_URL, lastData, {
-      auth: { username, password },
-    });
-    console.log("Data sent to API", res.data);
-  } catch (error) {
-    console.error("Error sending data to API", error);
-  }
-}, +process.env.POLL_INTERVAL);
+    try {
+      const res = await axios.post(API_URL, lastData, {
+        auth: { username, password },
+      });
+      console.log("Data sent to API", res.data);
+      lastId = lastData.id;
+      await fs.promises.writeFile("./lastId.txt", lastId);
+    } catch (error) {
+      console.error("Error sending data to API", error);
+    }
+  }, +process.env.POLL_INTERVAL);
+});
