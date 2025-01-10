@@ -6,7 +6,7 @@ class Model {
     const query = `
       SELECT
         t.id as id,
-        t.dev_id as device_id,
+        t.dev_alias as device_id,
         t.event_time as time,
         t.pin as driver_id,
         t.name as driver_name,
@@ -32,7 +32,7 @@ class Model {
     const query = `
       SELECT
         t.id as id,
-        t.dev_id as device_id,
+        t.dev_alias as device_id,
         t.event_time as time,
         t.pin as driver_id,
         t.name as driver_name,
@@ -54,13 +54,17 @@ class Model {
     return LogResult.create(rows[0]);
   }
 
-  static async getLastDataAllDevice() {
-    const data = [];
+  static async getAlldevice() {
     const query = `SELECT dev_alias FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
     const { rows } = await pool.query(query);
+    return rows;
+  }
 
-    for (const row of rows) {
-      const lastData = await this.getLastDataByDevice(row.dev_alias);
+  static async getLastDataAllDevice() {
+    const devices = await this.getAlldevice();
+
+    for (const device of devices) {
+      const lastData = await this.getLastDataByDevice(device.dev_alias);
       data.push(lastData);
     }
 
