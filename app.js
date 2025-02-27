@@ -29,6 +29,16 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.get("/api/camera", (req, res) => {
+  Model.getAlldevice()
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+});
+
 app.post("/api/getLastData", basicAuth, async (req, res) => {
   const { dev_alias } = req.body;
   const lastData = await Model.getLastDataByDevice(dev_alias);
