@@ -39,7 +39,7 @@
 
         for (const camera of cameras) {
           await loadPlayer({
-            url: `ws://${host}/api/stream?ip_address=${camera.ip_address}`,
+            url: `ws://<%=host%>/api/stream?ip_address=${camera.ip_address}`,
             canvas: document.getElementById(`canvas${camera.id}`),
             onDisconnect: () => console.log("Disconnected"),
             audio: false,
