@@ -17,9 +17,11 @@ app.ws("/api/stream", (ws, req) => {
 });
 
 app.get("/", async (req, res) => {
+  const host = req.get("host");
+
   try {
     const cameras = await Model.getAlldevice();
-    res.render("index", { scriptUrl, cameras });
+    res.render("index", { scriptUrl, cameras, host });
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
@@ -32,4 +34,4 @@ app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-sync();
+// sync();
