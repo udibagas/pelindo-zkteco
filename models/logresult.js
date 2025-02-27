@@ -9,7 +9,8 @@ class LogResult {
     driver_name,
     certificate_number,
     is_match = true,
-    photopath
+    photopath,
+    ip_address
   ) {
     this.id = id;
     this.device_id = device_id;
@@ -18,7 +19,9 @@ class LogResult {
     this.driver_name = driver_name;
     this.certificate_number = certificate_number;
     this.is_match = is_match;
-    this.photopath = "http://10.130.0.219:8098" + photopath;
+    this.originalPhotopath = photopath;
+    this.ip_address = ip_address;
+    this.photopath = "http://10.130.0.219:3000" + photopath;
   }
 
   static create({

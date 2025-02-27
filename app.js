@@ -4,8 +4,10 @@ const fs = require("fs");
 const Model = require("./models");
 const { default: axios } = require("axios");
 const basicAuth = require("./middleware/auth");
+const getSnapshot = require("./utils/snapshot");
 const app = express();
 
+app.use("/upload", express.static("upload"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -46,16 +48,17 @@ fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
     const diff = now - lastTime;
     // console.log(diff, lastTime, now);
 
-    // if (diff > 5_000_000) {
-    //   // console.log("Data is too old", lastData);
-    //   return;
-    // }
+    if (diff > 5_000) {
+      console.log("Data is too old", lastData);
+      return;
+    }
 
     console.log("New data found", lastData);
     const { API_URL, API_USER: username, API_PASS: password } = process.env;
     console.log("Sending data to API", API_URL);
 
     try {
+      getSnapshot(lastData.ip_address, lastData.originalPhotopath);
       const res = await axios.post(API_URL, lastData, {
         auth: { username, password },
       });

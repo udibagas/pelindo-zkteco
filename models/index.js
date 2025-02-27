@@ -10,10 +10,10 @@ class Model {
         t.event_time as time,
         t.pin as driver_id,
         t.name as driver_name,
-        -- t.certificate_number, 
-        t.vid_linkage_handle as photopath
+        t.vid_linkage_handle as photopath,
+        d.ip_address
       FROM acc_transaction t
-      JOIN pers_person p ON t.pin = p.pin
+      JOIN acc_device d ON t.device_id = d.id
       WHERE t.dev_alias ILIKE 'kiosk%'
       ORDER BY t.event_time DESC
       LIMIT 1
@@ -36,10 +36,10 @@ class Model {
         t.event_time as time,
         t.pin as driver_id,
         t.name as driver_name,
-        -- t.certificate_number, 
-        t.vid_linkage_handle as photopath
+        t.vid_linkage_handle as photopath,
+        d.ip_address
       FROM acc_transaction t
-      JOIN pers_person p ON t.pin = p.pin
+      JOIN acc_device d ON t.device_id = d.id
       WHERE t.dev_alias = $1
       ORDER BY t.event_time DESC
       LIMIT 1
@@ -55,7 +55,7 @@ class Model {
   }
 
   static async getAlldevice() {
-    const query = `SELECT dev_alias FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
+    const query = `SELECT dev_alias, ip_address FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
     const { rows } = await pool.query(query);
     return rows;
   }
