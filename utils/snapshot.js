@@ -2,7 +2,7 @@ const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
 
 function getSnapshot(ip_address, filepath) {
-  const dir = split("/").slice(0, -1).join("/");
+  const dir = filepath.split("/").slice(0, -1).join("/");
   fs.mkdirSync("." + dir, { recursive: true });
 
   ffmpeg(`rtsp://${ip_address}:8554/stream`)
