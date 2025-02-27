@@ -33,6 +33,7 @@ class LogResult {
     certificate_number,
     is_match = true,
     photopath,
+    ip_address,
   }) {
     return new LogResult(
       id,
@@ -42,7 +43,8 @@ class LogResult {
       driver_name,
       certificate_number,
       is_match,
-      photopath
+      photopath,
+      ip_address
     );
   }
 }
