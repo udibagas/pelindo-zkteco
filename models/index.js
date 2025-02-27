@@ -13,7 +13,7 @@ class Model {
         t.vid_linkage_handle as photopath,
         d.ip_address
       FROM acc_transaction t
-      JOIN acc_device d ON t.device_id = d.id
+      JOIN acc_device d ON t.dev_alias = d.dev_alias
       WHERE t.dev_alias ILIKE 'kiosk%'
       ORDER BY t.event_time DESC
       LIMIT 1
@@ -39,7 +39,7 @@ class Model {
         t.vid_linkage_handle as photopath,
         d.ip_address
       FROM acc_transaction t
-      JOIN acc_device d ON t.device_id = d.id
+      JOIN acc_device d ON t.dev_alias = d.dev_alias
       WHERE t.dev_alias = $1
       ORDER BY t.event_time DESC
       LIMIT 1
