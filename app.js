@@ -6,13 +6,31 @@ const { default: axios } = require("axios");
 const basicAuth = require("./middleware/auth");
 const getSnapshot = require("./utils/snapshot");
 const app = express();
+app.set("view engine", "ejs");
 
+const { proxy, scriptUrl } = require("rtsp-relay")(app);
 app.use("/upload", express.static("upload"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("What's up!");
+});
+
+app.ws("/api/stream", (ws, req) => {
+  const { ip_address } = req.query;
+  const url = `rtsp://${ip_address}:8554/stream`;
+  return proxy({ url })(ws);
+});
+
+app.get("/", async (req, res) => {
+  try {
+    const cameras = await Model.getAlldevice();
+    res.render("index", { scriptUrl, cameras });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
 });
 
 app.post("/api/getLastData", basicAuth, async (req, res) => {

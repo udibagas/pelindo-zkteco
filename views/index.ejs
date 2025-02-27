@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camera Viewer</title>
+
+    <style>
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      canvas {
+        border: 1px solid #ddd;
+        width: 512px;
+        height: 288px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <% cameras.forEach(c => { %>
+      <canvas id="canvas<%= c.id %>"></canvas>
+      <% }) %>
+    </div>
+
+    <script src="<%= scriptUrl %>"></script>
+
+    <script>
+      (async () => {
+        const res = await fetch("/api/camera");
+        if (res.statusText !== "OK") return;
+        const cameras = await res.json();
+
+        for (const camera of cameras) {
+          await loadPlayer({
+            url: `ws://localhost:3000/api/stream?url=${camera.ip_address}`,
+            canvas: document.getElementById(`canvas${camera.id}`),
+            onDisconnect: () => console.log("Disconnected"),
+            audio: false,
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
