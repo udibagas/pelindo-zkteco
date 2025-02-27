@@ -13,10 +13,6 @@ app.use("/upload", express.static("upload"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("What's up!");
-});
-
 app.ws("/api/stream", (ws, req) => {
   const { ip_address } = req.query;
   const url = `rtsp://${ip_address}:8554/stream`;
