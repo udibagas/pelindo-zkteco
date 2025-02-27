@@ -72,10 +72,10 @@ fs.readFile("./lastId.txt", "utf-8", (err, lastId) => {
     const diff = now - lastTime;
     // console.log(diff, lastTime, now);
 
-    if (diff > 5_000) {
-      console.log("Data is too old", lastData);
-      return;
-    }
+    // if (diff > 5_000) {
+    //   console.log("Data is too old", lastData);
+    //   return;
+    // }
 
     console.log("New data found", lastData);
     const { API_URL, API_USER: username, API_PASS: password } = process.env;
