@@ -41,6 +41,7 @@ client
   .connect()
   .then(() => {
     client.query("LISTEN api_channel");
+    console.log("Listening for notifications...");
   })
   .catch((err) => console.error("Connection error", err.stack));
 
