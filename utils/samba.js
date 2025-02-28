@@ -13,7 +13,7 @@ function moveFile(localFilePath, remoteFilePath, cb) {
     if (err) return cb(err);
 
     try {
-      createNestedDirs(remoteFilePath);
+      createNestedDirs(remoteFilePath.split("/").slice(0, -1).join("/"));
     } catch (error) {
       return cb(error);
     }
