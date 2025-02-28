@@ -63,6 +63,9 @@ client.on("notification", async (msg) => {
       return;
     }
 
+    lastData.pin = data.pin;
+    lastData.name = data.name;
+
     const query = `
       SELECT
         t.id as id,
