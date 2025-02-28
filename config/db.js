@@ -50,6 +50,11 @@ client.on("notification", async (msg) => {
     const data = JSON.parse(msg.payload);
     console.log("Received notification:", data);
 
+    if (!data.dev_alias?.toLowerCase().includes("kiosk")) {
+      console.log("Device not a kiosk, skipping...");
+      return;
+    }
+
     const query = `
       SELECT
         t.id as id,
@@ -83,7 +88,7 @@ client.on("notification", async (msg) => {
         console.log("Data sent to API", res.data);
       })
       .catch((err) => {
-        console.error("Error sending data to API", err);
+        console.error("Error sending data to API", err.message);
       });
 
     // pakai promise biar ga blocking
@@ -92,7 +97,7 @@ client.on("notification", async (msg) => {
         console.log(r);
       })
       .catch((e) => {
-        console.error(e);
+        console.error(e.message);
       });
   } catch (error) {
     console.error("Error processing notification:", error.message);
