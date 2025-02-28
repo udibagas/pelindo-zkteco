@@ -45,6 +45,8 @@ client
   })
   .catch((err) => console.error("Connection error", err.stack));
 
+const lastData = { pin: "", name: "" };
+
 // process notifications
 client.on("notification", async (msg) => {
   try {
@@ -53,6 +55,11 @@ client.on("notification", async (msg) => {
 
     if (!data.dev_alias?.toLowerCase().includes("kiosk")) {
       console.log("Device not a kiosk, skipping...");
+      return;
+    }
+
+    if (data.pin === lastData.pin && data.name === lastData.name) {
+      console.log("Duplicate notification, skipping...");
       return;
     }
 
