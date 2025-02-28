@@ -2,6 +2,8 @@ require("dotenv").config();
 const { Pool, Client } = require("pg");
 const fs = require("fs");
 const LogResult = require("../models/logresult");
+const axios = require("axios");
+const getSnapshot = require("../utils/snapshot");
 
 const {
   DB_HOST: host,
@@ -79,10 +81,13 @@ client.on("notification", async (msg) => {
       })
       .then((res) => {
         console.log("Data sent to API", res.data);
+      })
+      .catch((err) => {
+        console.error("Error sending data to API", err);
       });
 
     // pakai promise biar ga blocking
-    getSnapshot(logResult.ip_address, logResult.originalPhotopath)
+    getSnapshot(logResult.ip_address)
       .then((r) => {
         console.log(r);
       })
