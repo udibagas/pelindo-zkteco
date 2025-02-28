@@ -19,9 +19,12 @@ class LogResult {
     this.driver_name = driver_name;
     this.certificate_number = certificate_number;
     this.is_match = is_match;
-    this.originalPhotopath = photopath;
     this.ip_address = ip_address;
-    this.photopath = "http://10.130.0.219:3000" + photopath;
+    this.photopath = this.generatePath(photopath);
+  }
+
+  generatePath(photopath) {
+    return moment().format("YYYY/MM/DD/") + photopath.split("/").pop();
   }
 
   static create({
