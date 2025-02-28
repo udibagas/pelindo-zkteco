@@ -46,6 +46,7 @@ client
   .catch((err) => console.error("Connection error", err.stack));
 
 const lastData = { pin: "", name: "" };
+let timeout;
 
 // process notifications
 client.on("notification", async (msg) => {
@@ -65,6 +66,16 @@ client.on("notification", async (msg) => {
 
     lastData.pin = data.pin;
     lastData.name = data.name;
+
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+    }
+
+    // reset data after 5 minutes
+    timeout = setTimeout(() => {
+      lastData.pin = "";
+      lastData.name = "";
+    }, 60_000 * 5);
 
     const query = `
       SELECT
