@@ -22,9 +22,4 @@ router.get("/getLastData", basicAuth, async (req, res) => {
   }
 });
 
-router.post("/save", (req, res) => {
-  res.json({ message: "ok" });
-  console.log(req.body);
-});
-
 module.exports = router;
