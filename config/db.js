@@ -1,6 +1,5 @@
 require("dotenv").config();
 const { Pool, Client } = require("pg");
-const fs = require("fs");
 const LogResult = require("../models/logresult");
 const axios = require("axios");
 const getSnapshot = require("../utils/snapshot");
@@ -25,16 +24,6 @@ const dbConfig = {
 
 const pool = new Pool(dbConfig);
 const client = new Client(dbConfig);
-
-// create function
-// pool.query(fs.readFileSync("./config/function.sql", "utf-8"), (err) => {
-//   if (err) {
-//     console.error("Error running function.sql", err);
-//     return;
-//   }
-
-//   console.log("Function.sql executed successfully");
-// });
 
 // listen for notifications
 client
@@ -93,34 +82,21 @@ client.on("notification", async (msg) => {
     `;
 
     const { rows, rowCount } = await pool.query(query, [data.id]);
-
-    if (rowCount === 0) {
-      return;
-    }
+    if (rowCount === 0) return; // most likely will never happen
 
     const logResult = LogResult.create(rows[0]);
     const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
     // sengaja ga pake async await
     axios
-      .post(API_URL, logResult, {
-        auth: { username, password },
-      })
-      .then((res) => {
-        console.log("Data sent to API", res.data);
-      })
-      .catch((err) => {
-        console.error("Error sending data to API", err.message);
-      });
+      .post(API_URL, logResult, { auth: { username, password } })
+      .then(() => console.log("Data sent to API"))
+      .catch((err) => console.error(err.message));
 
     // pakai promise biar ga blocking
-    getSnapshot(logResult.ip_address, logResult.originalPhotopath)
-      .then((r) => {
-        console.log(r);
-      })
-      .catch((e) => {
-        console.error(e.message);
-      });
+    getSnapshot(logResult.ip_address, logResult.photopath)
+      .then((r) => console.log(r))
+      .catch((e) => console.error(e.message));
   } catch (error) {
     console.error("Error processing notification:", error.message);
   }
