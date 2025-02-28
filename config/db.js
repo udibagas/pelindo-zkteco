@@ -27,14 +27,14 @@ const pool = new Pool(dbConfig);
 const client = new Client(dbConfig);
 
 // create function
-pool.query(fs.readFileSync("./config/function.sql", "utf-8"), (err) => {
-  if (err) {
-    console.error("Error running function.sql", err);
-    return;
-  }
+// pool.query(fs.readFileSync("./config/function.sql", "utf-8"), (err) => {
+//   if (err) {
+//     console.error("Error running function.sql", err);
+//     return;
+//   }
 
-  console.log("Function.sql executed successfully");
-});
+//   console.log("Function.sql executed successfully");
+// });
 
 // listen for notifications
 client
