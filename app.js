@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const sync = require("./utils/sync");
 const Model = require("./models");
 const app = express();
 app.set("view engine", "ejs");
@@ -33,5 +32,3 @@ app.use(require("./routes"));
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
-
-sync();

@@ -1,5 +1,7 @@
 require("dotenv").config();
-const { Pool } = require("pg");
+const { Pool, Client } = require("pg");
+const fs = require("fs");
+const LogResult = require("../models/logresult");
 
 const {
   DB_HOST: host,
@@ -9,7 +11,7 @@ const {
   DB_NAME: database,
 } = process.env;
 
-const pool = new Pool({
+const dbConfig = {
   host,
   port: +port,
   user,
@@ -17,6 +19,79 @@ const pool = new Pool({
   database,
   idleTimeoutMillis: 100,
   connectionTimeoutMillis: 1000,
+};
+
+const pool = new Pool(dbConfig);
+const client = new Client(dbConfig);
+
+// create function
+pool.query(fs.readFileSync("./config/function.sql", "utf-8"), (err) => {
+  if (err) {
+    console.error("Error running function.sql", err);
+    return;
+  }
+
+  console.log("Function.sql executed successfully");
+});
+
+// listen for notifications
+client
+  .connect()
+  .then(() => {
+    client.query("LISTEN api_channel");
+  })
+  .catch((err) => console.error("Connection error", err.stack));
+
+// process notifications
+client.on("notification", async (msg) => {
+  try {
+    const data = JSON.parse(msg.payload);
+    console.log("Received notification:", data);
+
+    const query = `
+      SELECT
+        t.id as id,
+        t.dev_alias as device_id,
+        t.event_time as time,
+        t.pin as driver_id,
+        t.name as driver_name,
+        t.vid_linkage_handle as photopath,
+        d.ip_address
+      FROM acc_transaction t
+      JOIN acc_device d ON t.dev_alias = d.dev_alias
+      WHERE t.id = $1
+      LIMIT 1
+    `;
+
+    const { rows, rowCount } = await pool.query(query, [data.id]);
+
+    if (rowCount === 0) {
+      return;
+    }
+
+    const logResult = LogResult.create(rows[0]);
+    const { API_URL, API_USER: username, API_PASS: password } = process.env;
+
+    // sengaja ga pake async await
+    axios
+      .post(API_URL, logResult, {
+        auth: { username, password },
+      })
+      .then((res) => {
+        console.log("Data sent to API", res.data);
+      });
+
+    // pakai promise biar ga blocking
+    getSnapshot(logResult.ip_address, logResult.originalPhotopath)
+      .then((r) => {
+        console.log(r);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  } catch (error) {
+    console.error("Error processing notification:", error.message);
+  }
 });
 
 module.exports = pool;
