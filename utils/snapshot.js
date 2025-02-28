@@ -7,7 +7,7 @@ function getSnapshot(ip_address, filepath) {
       const dir = filepath.split("/").slice(0, -1).join("/");
       fs.mkdirSync("." + dir, { recursive: true });
     } catch (error) {
-      reject(error);
+      return reject(error);
     }
 
     ffmpeg(`rtsp://${ip_address}:8554/stream`)
