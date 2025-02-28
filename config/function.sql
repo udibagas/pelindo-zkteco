@@ -1,5 +1,5 @@
--- DROP TRIGGER IF EXISTS trigger_notify_api;
--- DROP FUNCTION IF EXISTS notify_api;
+DROP TRIGGER IF EXISTS trigger_notify_api;
+DROP FUNCTION IF EXISTS notify_api;
 
 CREATE FUNCTION notify_api()
 RETURNS TRIGGER AS $$
@@ -11,4 +11,4 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_notify_api
 AFTER INSERT ON acc_transaction
-FOR EACH ROW EXECUTE FUNCTION notify_api();
+FOR EACH ROW EXECUTE PROCEDURE notify_api();
