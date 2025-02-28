@@ -87,7 +87,7 @@ client.on("notification", async (msg) => {
       });
 
     // pakai promise biar ga blocking
-    getSnapshot(logResult.ip_address)
+    getSnapshot(logResult.ip_address, logResult.originalPhotopath)
       .then((r) => {
         console.log(r);
       })
