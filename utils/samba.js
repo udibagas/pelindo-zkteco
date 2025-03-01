@@ -20,7 +20,7 @@ function moveFile(localFilePath, remoteFilePath) {
       }
 
       smbClient.writeFile(remoteFilePath, data, (err) => {
-        if (err) return cb(err);
+        if (err) return reject(err);
 
         // remove local file after moved
         try {
