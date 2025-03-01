@@ -34,10 +34,12 @@ async function processNotification(msg, pool) {
   }, 60_000 * 5);
 
   const logResult = LogResult.create(data);
-  const { ip_address } = await getDeviceById(data.dev_id, pool);
 
-  // ! must take photopath from LogResult
-  getSnapshot(ip_address, logResult.photopath)
+  // pakai promise biar ga blocking
+  getDeviceById(data.dev_id, pool)
+    .then((device) => {
+      return getSnapshot(device.ip_address, logResult.photopath);
+    })
     .then((r) => {
       console.log(r);
       return moveFile(`./${logResult.photopath}`, logResult.photopath);
@@ -45,7 +47,6 @@ async function processNotification(msg, pool) {
     .then((r) => console.log(r))
     .catch((e) => console.error(e.message));
 
-  // pakai promise biar ga blocking
   return axios.post(API_URL, logResult, { auth: { username, password } });
 }
 
