@@ -48,7 +48,7 @@ function createNestedDirs(path, index = 0, basePath = "") {
     if (err && err.code !== "STATUS_OBJECT_NAME_COLLISION") {
       throw err;
     } else {
-      console.log(`Created or already exists: ${currentPath}`);
+      // console.log(`Created or already exists: ${currentPath}`);
       createNestedDirs(pathSegments, index + 1, currentPath);
     }
   });
