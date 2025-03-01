@@ -2,31 +2,6 @@ const { pool } = require("../config/db");
 const LogResult = require("./logresult");
 
 class Model {
-  static async getById(id) {
-    const query = `
-      SELECT
-        t.id as id,
-        t.dev_alias as device_id,
-        t.event_time as time,
-        t.pin as driver_id,
-        t.name as driver_name,
-        t.vid_linkage_handle as photopath,
-        d.ip_address
-      FROM acc_transaction t
-      JOIN acc_device d ON t.dev_alias = d.dev_alias
-      WHERE t.id = $1
-      LIMIT 1
-    `;
-
-    const { rows, rowCount } = await pool.query(query, [id]);
-
-    if (rowCount === 0) {
-      return null;
-    }
-
-    return LogResult.create(rows[0]);
-  }
-
   static async getLastDataByDevice(device) {
     const query = `
       SELECT
@@ -35,8 +10,7 @@ class Model {
         t.event_time as time,
         t.pin as driver_id,
         t.name as driver_name,
-        t.vid_linkage_handle as photopath,
-        d.ip_address
+        t.vid_linkage_handle as photopath
       FROM acc_transaction t
       JOIN acc_device d ON t.dev_alias = d.dev_alias
       WHERE t.dev_alias = $1
@@ -57,6 +31,13 @@ class Model {
     const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
     const { rows } = await pool.query(query);
     return rows;
+  }
+
+  static async getDeviceByAlias(alias) {
+    const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias = $1 `;
+    const { rows, rowCount } = await pool.query(query, [alias]);
+    if (rowCount === 0) return null;
+    return rows[0];
   }
 
   static async getLastDataAllDevice() {
