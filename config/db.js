@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { Pool, Client } = require("pg");
+import { processNotification } from "./utils/listener";
 
 const {
   DB_HOST: host,
@@ -21,5 +22,12 @@ const dbConfig = {
 
 const pool = new Pool(dbConfig);
 const client = new Client(dbConfig);
+
+client
+  .connect()
+  .then(() => client.query("LISTEN api_channel"))
+  .catch((err) => console.error(err.message));
+
+client.on("notification", processNotification);
 
 module.exports = { pool, client };
