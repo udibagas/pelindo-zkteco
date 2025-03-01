@@ -1,7 +1,7 @@
 const axios = require("axios");
 const getSnapshot = require("../utils/snapshot");
 const { moveFile } = require("../utils/samba");
-const Model = require("../models");
+const LogResult = require("../models/logresult");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
 const lastData = { pin: "", name: "" };
@@ -36,9 +36,23 @@ async function processNotification(msg) {
       lastData.name = "";
     }, 60_000 * 5);
 
-    const logResult = await Model.getById(data.id);
-    // most likely will never happen
-    if (!logResult) return console.log("Data not found");
+    const {
+      id,
+      dev_alias: device_id,
+      event_time: time,
+      pin: driver_id,
+      name: driver_name,
+      vid_linkage_handle: photopath,
+    } = data;
+
+    const logResult = LogResult.create({
+      id,
+      device_id,
+      time,
+      driver_id,
+      driver_name,
+      photopath,
+    });
 
     // pakai promise biar ga blocking
     axios
@@ -46,7 +60,7 @@ async function processNotification(msg) {
       .then(() => console.log("Data sent to API"))
       .catch((err) => console.error(err.message));
 
-    getSnapshot(logResult.ip_address, logResult.photopath)
+    getSnapshot(logResult.device_id, logResult.photopath)
       .then((r) => {
         console.log(r);
         return moveFile(`.${logResult.photopath}`, logResult.photopath);
