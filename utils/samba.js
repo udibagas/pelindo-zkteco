@@ -1,11 +1,13 @@
 const SMB2 = require("smb2");
 const fs = require("fs");
 
+const { SMB_DIR, SMB_HOST, SMB_USER, SMB_PASS } = process.env;
+
 const smbClient = new SMB2({
-  share: `\\\\${process.env.SMB_HOST}\\${process.env.SMB_DIR}`,
+  share: `\\\\${SMB_HOST}\\${SMB_DIR}`,
   domain: "WORKGROUP",
-  username: process.env.SMB_USER,
-  password: process.env.SMB_PASS,
+  username: SMB_USER,
+  password: SMB_PASS,
 });
 
 function moveFile(localFilePath, remoteFilePath) {
