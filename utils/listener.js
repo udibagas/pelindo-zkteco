@@ -11,11 +11,11 @@ async function processNotification(msg, pool) {
   const data = JSON.parse(msg.payload);
 
   if (!data.dev_alias?.toLowerCase().includes("kiosk")) {
-    return "Device not a kiosk, skipping...";
+    throw new Error("Device not a kiosk, skipping...");
   }
 
   if (data.pin === lastData.pin && data.name === lastData.name) {
-    return "Duplicate notification, skipping...";
+    throw new Error("Duplicate notification, skipping...");
   }
 
   console.log("New notification:", data);
@@ -47,7 +47,9 @@ async function processNotification(msg, pool) {
     .then((r) => console.log(r))
     .catch((e) => console.error(e.message));
 
-  return axios.post(API_URL, logResult, { auth: { username, password } });
+  return axios
+    .post(API_URL, logResult, { auth: { username, password } })
+    .then((r) => r.data);
 }
 
 async function getDeviceById(dev_id, pool) {
