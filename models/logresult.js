@@ -9,8 +9,7 @@ class LogResult {
     driver_name,
     certificate_number,
     is_match = true,
-    photopath,
-    ip_address
+    photopath
   ) {
     this.id = id;
     this.device_id = device_id;
@@ -19,7 +18,6 @@ class LogResult {
     this.driver_name = driver_name;
     this.certificate_number = certificate_number;
     this.is_match = is_match;
-    this.ip_address = ip_address;
     this.photopath = this.generatePath(photopath);
   }
 
@@ -36,7 +34,6 @@ class LogResult {
     certificate_number,
     is_match = true,
     photopath,
-    ip_address,
   }) {
     return new LogResult(
       id,
@@ -46,8 +43,7 @@ class LogResult {
       driver_name,
       certificate_number,
       is_match,
-      photopath,
-      ip_address
+      photopath
     );
   }
 }
