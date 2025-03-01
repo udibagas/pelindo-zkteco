@@ -49,7 +49,10 @@ async function processNotification(msg, pool) {
 
   return axios
     .post(API_URL, logResult, { auth: { username, password } })
-    .then((r) => r.data);
+    .then((r) => {
+      console.log("Data sent to api");
+      return r.data;
+    });
 }
 
 async function getDeviceById(dev_id, pool) {
