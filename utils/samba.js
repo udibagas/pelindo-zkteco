@@ -1,6 +1,5 @@
 const SMB2 = require("smb2");
 const fs = require("fs");
-const { resolve } = require("dns");
 
 const smbClient = new SMB2({
   share: `\\\\${process.env.SMB_HOST}\\${process.env.SMB_DIR}`,
@@ -22,6 +21,15 @@ function moveFile(localFilePath, remoteFilePath) {
 
       smbClient.writeFile(remoteFilePath, data, (err) => {
         if (err) return cb(err);
+
+        // remove local file after moved
+        try {
+          fs.unlinkSync(localFilePath);
+        } catch (error) {
+          // log error but don't reject
+          console.error(error.message);
+        }
+
         resolve("File moved successfully");
       });
     });
