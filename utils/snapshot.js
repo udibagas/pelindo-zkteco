@@ -13,34 +13,10 @@ function getSnapshot(ip_address, filepath) {
 
     ffmpeg(`rtsp://${ip_address}:8554/stream`)
       .inputOptions(["-rtsp_transport", "tcp"]) // Force TCP transport
-      .outputOptions([
-        "-vframes",
-        "1", // Capture only 1 frame
-        "-vcodec",
-        "mjpeg", // Use MJPEG codec
-        "-q:v",
-        "2", // Set quality (1 = highest, 31 = lowest)
-      ])
-      .on("start", (commandLine) => {
-        console.log("Running command:", commandLine);
-      })
-      .on("error", (err) => {
-        reject(err);
-      })
-      .on("end", () => {
-        moveFile(`./${filepath}`, filepath, (err) => {
-          if (err) return reject(err);
-
-          // uncomment if ok
-          // try {
-          //   fs.unlinkSync(`./${filepath}`);
-          // } catch (error) {
-          //   console.error("Error deleting file", error);
-          // }
-
-          resolve("Snapshot taken");
-        });
-      })
+      .outputOptions(["-vframes", "1", "-vcodec", "mjpeg", "-q:v", "2"]) // 1 frame, mjpeg, quality 2
+      .on("start", (cmd) => console.log("Running command:", cmd))
+      .on("error", (err) => reject(err))
+      .on("end", () => resolve("Snapshot taken"))
       .save(`.${filepath}`); // tambahin titik biar gak absolute path
   });
 }

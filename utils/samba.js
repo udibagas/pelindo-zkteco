@@ -1,5 +1,6 @@
 const SMB2 = require("smb2");
 const fs = require("fs");
+const { resolve } = require("dns");
 
 const smbClient = new SMB2({
   share: `\\\\${process.env.SMB_HOST}\\${process.env.SMB_DIR}`,
@@ -8,19 +9,21 @@ const smbClient = new SMB2({
   password: process.env.SMB_PASS,
 });
 
-function moveFile(localFilePath, remoteFilePath, cb) {
-  fs.readFile(localFilePath, (err, data) => {
-    if (err) return cb(err);
+function moveFile(localFilePath, remoteFilePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(localFilePath, (err, data) => {
+      if (err) return reject(err);
 
-    try {
-      createNestedDirs(remoteFilePath.split("/").slice(0, -1).join("/"));
-    } catch (error) {
-      return cb(error);
-    }
+      try {
+        createNestedDirs(remoteFilePath.split("/").slice(0, -1).join("/"));
+      } catch (error) {
+        return reject(error);
+      }
 
-    smbClient.writeFile(remoteFilePath, data, (err) => {
-      if (err) return cb(err);
-      cb(null);
+      smbClient.writeFile(remoteFilePath, data, (err) => {
+        if (err) return cb(err);
+        resolve("File moved successfully");
+      });
     });
   });
 }

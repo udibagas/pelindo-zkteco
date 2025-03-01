@@ -2,7 +2,7 @@ const pool = require("../config/db");
 const LogResult = require("./logresult");
 
 class Model {
-  static async getLastTransaction() {
+  static async getById(id) {
     const query = `
       SELECT
         t.id as id,
@@ -14,12 +14,11 @@ class Model {
         d.ip_address
       FROM acc_transaction t
       JOIN acc_device d ON t.dev_alias = d.dev_alias
-      WHERE t.dev_alias ILIKE 'kiosk%'
-      ORDER BY t.event_time DESC
+      WHERE t.id = $1
       LIMIT 1
     `;
 
-    const { rows, rowCount } = await pool.query(query);
+    const { rows, rowCount } = await pool.query(query, [id]);
 
     if (rowCount === 0) {
       return null;
