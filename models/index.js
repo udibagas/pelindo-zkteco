@@ -28,27 +28,16 @@ class Model {
   }
 
   static async getAlldevice() {
-    const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
+    const query = `SELECT id, dev_alias FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
     const { rows } = await pool.query(query);
     return rows;
   }
 
-  static async getDeviceByAlias(alias) {
-    const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias = $1 `;
-    const { rows, rowCount } = await pool.query(query, [alias]);
+  static async getDeviceById(dev_id) {
+    const query = `SELECT * FROM acc_device WHERE id = $1 `;
+    const { rows, rowCount } = await pool.query(query, [dev_id]);
     if (rowCount === 0) return null;
     return rows[0];
-  }
-
-  static async getLastDataAllDevice() {
-    const devices = await this.getAlldevice();
-
-    for (const device of devices) {
-      const lastData = await this.getLastDataByDevice(device.dev_alias);
-      data.push(lastData);
-    }
-
-    return data;
   }
 }
 
