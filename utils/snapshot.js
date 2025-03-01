@@ -1,12 +1,7 @@
 const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
-const Model = require("../models");
 
-async function getSnapshot(dev_alias, filepath) {
-  const device = await Model.getDeviceByAlias(dev_alias);
-  if (!device) throw new Error("Device not found");
-  const { ip_address } = device;
-
+async function getSnapshot(ip_address, filepath) {
   return new Promise((resolve, reject) => {
     try {
       const dir = filepath.split("/").slice(0, -1).join("/");
