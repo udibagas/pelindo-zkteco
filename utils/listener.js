@@ -62,17 +62,18 @@ async function processNotification(msg, pool) {
 
   const { ip_address } = await getDeviceById(dev_id, pool);
 
+  // ! must take photopath from LogResult
   getSnapshot(ip_address, logResult.photopath)
     .then((r) => {
       console.log(r);
-      return moveFile(`.${logResult.photopath}`, logResult.photopath);
+      return moveFile(`./${logResult.photopath}`, logResult.photopath);
     })
     .then((r) => console.log(r))
     .catch((e) => console.error(e.message));
 }
 
 async function getDeviceById(dev_id, pool) {
-  const query = `SELECT * FROM acc_device WHERE id = $1 `;
+  const query = `SELECT ip_address FROM acc_device WHERE id = $1 `;
   const { rows, rowCount } = await pool.query(query, [dev_id]);
   if (rowCount === 0) throw new Error("Device not found");
   return rows[0];

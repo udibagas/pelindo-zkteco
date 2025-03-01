@@ -16,7 +16,7 @@ async function getSnapshot(ip_address, filepath) {
       .on("start", (cmd) => console.log("Running command:", cmd))
       .on("error", (err) => reject(err))
       .on("end", () => resolve("Snapshot taken"))
-      .save(`.${filepath}`); // tambahin titik biar gak absolute path
+      .save(`./${filepath}`);
   });
 }
 
