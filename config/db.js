@@ -28,6 +28,10 @@ client
   .then(() => client.query("LISTEN api_channel"))
   .catch((err) => console.error(err.message));
 
-client.on("notification", (msg) => processNotification(msg, pool));
+client.on("notification", (msg) => {
+  processNotification(msg, pool)
+    .then((r) => console.log(r))
+    .catch((err) => console.error(err.message));
+});
 
 module.exports = { pool, client };

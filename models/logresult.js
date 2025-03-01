@@ -7,18 +7,18 @@ class LogResult {
     time,
     driver_id,
     driver_name,
-    certificate_number,
-    is_match = true,
-    photopath
+    photopath,
+    certificate_number = "",
+    is_match = true
   ) {
     this.id = id;
     this.device_id = device_id;
     this.time = moment(time).format("YYYY-MM-DD HH:mm:ss");
     this.driver_id = driver_id;
     this.driver_name = driver_name;
+    this.photopath = this.generatePath(photopath);
     this.certificate_number = certificate_number;
     this.is_match = is_match;
-    this.photopath = this.generatePath(photopath);
   }
 
   generatePath(photopath) {
@@ -27,13 +27,11 @@ class LogResult {
 
   static create({
     id,
-    device_id,
-    time,
-    driver_id,
-    driver_name,
-    certificate_number,
-    is_match = true,
-    photopath,
+    dev_alias: device_id,
+    event_time: time,
+    pin: driver_id,
+    name: driver_name,
+    vid_linkage_handle: photopath,
   }) {
     return new LogResult(
       id,
@@ -41,8 +39,6 @@ class LogResult {
       time,
       driver_id,
       driver_name,
-      certificate_number,
-      is_match,
       photopath
     );
   }

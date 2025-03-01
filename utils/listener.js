@@ -11,13 +11,11 @@ async function processNotification(msg, pool) {
   const data = JSON.parse(msg.payload);
 
   if (!data.dev_alias?.toLowerCase().includes("kiosk")) {
-    console.log("Device not a kiosk, skipping...");
-    return;
+    return "Device not a kiosk, skipping...";
   }
 
   if (data.pin === lastData.pin && data.name === lastData.name) {
-    console.log("Duplicate notification, skipping...");
-    return;
+    return "Duplicate notification, skipping...";
   }
 
   console.log("New notification:", data);
@@ -35,32 +33,8 @@ async function processNotification(msg, pool) {
     lastData.name = "";
   }, 60_000 * 5);
 
-  const {
-    id,
-    dev_id,
-    dev_alias: device_id,
-    event_time: time,
-    pin: driver_id,
-    name: driver_name,
-    vid_linkage_handle: photopath,
-  } = data;
-
-  const logResult = LogResult.create({
-    id,
-    device_id,
-    time,
-    driver_id,
-    driver_name,
-    photopath,
-  });
-
-  // pakai promise biar ga blocking
-  axios
-    .post(API_URL, logResult, { auth: { username, password } })
-    .then((r) => console.log("Data sent to API", r.data))
-    .catch((err) => console.error(err.message));
-
-  const { ip_address } = await getDeviceById(dev_id, pool);
+  const logResult = LogResult.create(data);
+  const { ip_address } = await getDeviceById(data.dev_id, pool);
 
   // ! must take photopath from LogResult
   getSnapshot(ip_address, logResult.photopath)
@@ -70,6 +44,9 @@ async function processNotification(msg, pool) {
     })
     .then((r) => console.log(r))
     .catch((e) => console.error(e.message));
+
+  // pakai promise biar ga blocking
+  return axios.post(API_URL, logResult, { auth: { username, password } });
 }
 
 async function getDeviceById(dev_id, pool) {

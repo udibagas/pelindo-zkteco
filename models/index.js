@@ -4,17 +4,10 @@ const LogResult = require("./logresult");
 class Model {
   static async getLastDataByDevice(device) {
     const query = `
-      SELECT
-        t.id as id,
-        t.dev_alias as device_id,
-        t.event_time as time,
-        t.pin as driver_id,
-        t.name as driver_name,
-        t.vid_linkage_handle as photopath
-      FROM acc_transaction t
-      JOIN acc_device d ON t.dev_alias = d.dev_alias
-      WHERE t.dev_alias = $1
-      ORDER BY t.event_time DESC
+      SELECT id, dev_alias, event_time, pin, name, vid_linkage_handle
+      FROM acc_transaction
+      WHERE dev_alias = $1
+      ORDER BY event_time DESC
       LIMIT 1
     `;
 
