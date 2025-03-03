@@ -4,7 +4,7 @@ const { moveFile } = require("./samba");
 const LogResult = require("../models/logresult");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
-const lastData = { pin: "", name: "" };
+const lastData = { pin: "", name: "", dev_id: "" };
 let timeout;
 
 async function processNotification(msg, pool) {
@@ -14,7 +14,11 @@ async function processNotification(msg, pool) {
     throw new Error("Device not a kiosk, skipping...");
   }
 
-  if (data.pin === lastData.pin && data.name === lastData.name) {
+  if (
+    data.pin === lastData.pin &&
+    data.name === lastData.name &&
+    data.dev_id === lastData.dev_id
+  ) {
     throw new Error("Duplicate notification, skipping...");
   }
 
@@ -22,6 +26,7 @@ async function processNotification(msg, pool) {
 
   lastData.pin = data.pin;
   lastData.name = data.name;
+  lastData.dev_id = data.dev_id;
 
   if (timeout !== undefined) {
     clearTimeout(timeout);
