@@ -4,13 +4,14 @@ const fs = require("fs");
 const { SMB_DIR, SMB_HOST, SMB_USER, SMB_PASS } = process.env;
 
 const smbClient = new SMB2({
-  share: `\\\\${SMB_HOST}\\${SMB_DIR}`,
+  share: `\\\\${SMB_HOST}\\${SMB_DIR}\\face`,
   domain: "WORKGROUP",
   username: SMB_USER,
   password: SMB_PASS,
 });
 
 function moveFile(localFilePath, remoteFilePath) {
+  console.log(`Moving file to shared folder`);
   return new Promise((resolve, reject) => {
     fs.readFile(localFilePath, (err, data) => {
       if (err) return reject(err);
