@@ -1,3 +1,4 @@
+require("dotenv").config();
 const SMB2 = require("smb2");
 const fs = require("fs");
 
@@ -9,6 +10,19 @@ const smbClient = new SMB2({
   username: SMB_USER,
   password: SMB_PASS,
 });
+
+function checkConnection() {
+  return new Promise((resolve, reject) => {
+    smbClient.readdir("", (err, files) => {
+      if (err) {
+        console.error(err);
+        return reject(new Error("SMB client is not connected"));
+      }
+      console.log(files);
+      resolve("SMB client is connected");
+    });
+  });
+}
 
 function moveFile(localFilePath, remoteFilePath) {
   console.log(`Moving file to shared folder`);
@@ -56,5 +70,9 @@ function createNestedDirs(path, index = 0, basePath = "") {
     }
   });
 }
+
+checkConnection()
+  .then((r) => console.log(r))
+  .catch((e) => console.error(e.message));
 
 module.exports = { moveFile, createNestedDirs };
