@@ -36,6 +36,7 @@ async function processNotification(msg, pool) {
   timeout = setTimeout(() => {
     lastData.pin = "";
     lastData.name = "";
+    lastData.dev_id = "";
   }, 60_000 * 5);
 
   const logResult = LogResult.create(data);
