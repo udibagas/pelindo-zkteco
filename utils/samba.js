@@ -9,6 +9,8 @@ async function moveFile(localFilePath, remoteFilePath) {
     dir + "/" + remoteFilePath.split("/").pop(),
     data
   );
+  fs.unlinkSync(localFilePath);
+  return "File has been moved";
 }
 
 module.exports = { moveFile };
