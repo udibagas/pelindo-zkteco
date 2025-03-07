@@ -18,6 +18,9 @@
     "moment": "^2.30.1",
     "node-onvif": "^0.1.7",
     "pg": "^8.13.1",
-    "rtsp-relay": "^1.9.0"
+    "rtsp-relay": "^1.9.0",
+    "winston": "^3.17.0",
+    "winston-transport": "^4.9.0",
+    "ws": "^8.18.1"
   }
 }

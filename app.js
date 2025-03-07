@@ -22,7 +22,7 @@ app.get("/", async (req, res) => {
     const cameras = await Model.getAlldevice();
     res.render("index", { scriptUrl, cameras, host });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.status(500).send(error.message);
   }
 });
