@@ -6,7 +6,7 @@ async function moveFile(localFilePath, remoteFilePath) {
   const filename = remoteFilePath.split("/").pop();
   const client = new Client();
 
-  client.ftp.verbose = true;
+  client.ftp.verbose = false;
 
   try {
     await client.access({
