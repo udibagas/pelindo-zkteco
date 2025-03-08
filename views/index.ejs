@@ -51,13 +51,25 @@
         width: 512px;
         height: 288px;
       }
+
+      .userinfo {
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        font-family: monospace;
+        padding: 5px;
+      }
     </style>
   </head>
   <body>
     <div class="main">
       <div class="container">
         <% cameras.forEach(c => { %>
-        <canvas id="canvas<%= c.id %>"></canvas>
+        <div>
+          <canvas id="canvas<%= c.id %>"></canvas>
+          <div class="userinfo" id="userinfo<%= c.id %>">&nbsp;</div>
+        </div>
         <% }) %>
       </div>
       <div id="log-container"></div>
@@ -101,7 +113,21 @@
 
       socket.onmessage = (event) => {
         const log = JSON.parse(event.data);
-        console.log(log);
+
+        if (log.message.includes("New notification")) {
+          const prefixLength = "New notification: ".length;
+          let data = log.message.slice(prefixLength);
+          data = JSON.parse(data);
+          const userInfo = document.getElementById(`userinfo${data.dev_id}`);
+
+          if (userInfo) {
+            userInfo.innerHTML = data.name;
+            setTimeout(() => {
+              userInfo.innerHTML = "&nbsp;";
+            }, 10000);
+          }
+        }
+
         renderLog(log);
       };
 
