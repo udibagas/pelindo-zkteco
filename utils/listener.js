@@ -1,8 +1,8 @@
 const axios = require("axios");
 const getSnapshot = require("./snapshot");
-const { moveFile } = require("./samba");
 const LogResult = require("../models/logresult");
 const logger = require("../logger");
+const moveFile = require("./ftp");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
 const lastData = { pin: "", name: "", dev_id: "" };
@@ -49,7 +49,7 @@ async function processNotification(msg, pool) {
     })
     .then((r) => {
       logger.info(JSON.stringify(r));
-      return moveFile(`./${logResult.photopath}`, logResult.photopath);
+      return moveFile(`.${logResult.photopath}`, logResult.photopath);
     })
     .then((r) => logger.info(JSON.stringify(r)))
     .catch((e) => logger.error(e.message));

@@ -1,19 +1,7 @@
-const pool = require("./config/db");
+require("dotenv").config();
 
-const query = `
-  SELECT *
-  FROM acc_transaction t
-  JOIN pers_person p ON t.pin = p.pin
-  WHERE dev_alias ILIKE 'kiosk%'
-  order by t.create_time desc
-  LIMIT 1
-`;
+const moveFile = require("./utils/ftp");
 
-pool.query(query, (err, res) => {
-  if (err) {
-    console.error("Error executing query", err.stack);
-    return;
-  }
-
-  console.log(res.rows);
-});
+moveFile("./test.js", "/a/b/c/test.js")
+  .then((r) => console.log(r))
+  .catch((e) => console.error(e.message));
