@@ -6,7 +6,7 @@ async function getSnapshot(ip_address, filepath) {
   return new Promise((resolve, reject) => {
     try {
       const dir = filepath.split("/").slice(0, -1).join("/");
-      fs.mkdirSync("./upload/" + dir, { recursive: true });
+      fs.mkdirSync(dir, { recursive: true });
     } catch (error) {
       return reject(error);
     }
