@@ -23,7 +23,7 @@ class LogResult {
 
   generatePath(photopath) {
     return (
-      "/face/" + moment().format("YYYY/MM/DD/") + photopath.split("/").pop()
+      "face/" + moment().format("YYYY/MM/DD/") + photopath.split("/").pop()
     );
   }
 

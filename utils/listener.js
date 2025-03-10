@@ -49,7 +49,7 @@ async function processNotification(msg, pool) {
     })
     .then((r) => {
       logger.info(JSON.stringify(r));
-      return moveFile(`.${logResult.photopath}`, logResult.photopath);
+      return moveFile(`./${logResult.photopath}`, logResult.photopath);
     })
     .then((r) => logger.info(JSON.stringify(r)))
     .catch((e) => logger.error(e.message));

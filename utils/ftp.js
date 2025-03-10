@@ -15,7 +15,7 @@ async function moveFile(localFilePath, remoteFilePath) {
       password: process.env.FTP_PASS,
     });
 
-    await client.ensureDir(process.env.FTP_DIR + path);
+    await client.ensureDir(process.env.FTP_DIR + "/" + path);
     await client.uploadFrom(localFilePath, filename);
 
     // delete local file
