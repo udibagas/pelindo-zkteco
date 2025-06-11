@@ -25,6 +25,12 @@ class Model {
     const { rows } = await pool.query(query);
     return rows;
   }
+
+  static async getPerson() {
+    const query = `SELECT * FROM pers_person`;
+    const { rows } = await pool.query(query);
+    return rows;
+  }
 }
 
 module.exports = Model;

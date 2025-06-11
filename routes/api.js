@@ -22,4 +22,13 @@ router.get("/getLastData", basicAuth, async (req, res) => {
   }
 });
 
+router.get("/person", basicAuth, async (req, res) => {
+  try {
+    const personData = await Model.getPerson();
+    res.status(200).json(personData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
