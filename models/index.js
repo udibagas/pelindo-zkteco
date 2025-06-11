@@ -31,6 +31,17 @@ class Model {
     const { rows } = await pool.query(query);
     return rows;
   }
+
+  static async getPersonById(id) {
+    const query = `SELECT * FROM pers_person WHERE id = $1`;
+    const { rows } = await pool.query(query, [id]);
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return rows[0];
+  }
 }
 
 module.exports = Model;

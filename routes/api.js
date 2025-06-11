@@ -31,4 +31,16 @@ router.get("/person", basicAuth, async (req, res) => {
   }
 });
 
+router.get("/person/:id", basicAuth, async (req, res) => {
+  try {
+    const driver = await Model.getPersonById(req.params.id);
+    if (!driver) {
+      return res.status(404).json({ message: "Person not found" });
+    }
+    res.status(200).json(driver);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
