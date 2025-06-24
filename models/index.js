@@ -27,13 +27,28 @@ class Model {
   }
 
   static async getPerson() {
-    const query = `SELECT * FROM pers_person`;
+    const query = `
+      SELECT
+        pers_person.*,
+        auth_department.name AS department
+      FROM pers_person
+      JOIN auth_department
+        ON pers_person.auth_dept_id = auth_department.id
+    `;
     const { rows } = await pool.query(query);
     return rows;
   }
 
   static async getPersonById(id) {
-    const query = `SELECT * FROM pers_person WHERE id = $1`;
+    const query = `
+      SELECT
+        pers_person.*,
+        auth_department.name AS department
+      FROM pers_person
+      JOIN auth_department
+        ON pers_person.auth_dept_id = auth_department.id
+      WHERE pers_person.id = $1
+    `;
     const { rows } = await pool.query(query, [id]);
 
     if (rows.length === 0) {
