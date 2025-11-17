@@ -14,6 +14,9 @@ async function moveFile(localFilePath, remoteFilePath) {
       user: process.env.FTP_USER,
       password: process.env.FTP_PASS,
       secure: true,
+      secureOptions: {
+        rejectUnauthorized: false,
+      },
     });
 
     await client.ensureDir(process.env.FTP_DIR + "/" + path);
