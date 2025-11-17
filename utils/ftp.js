@@ -13,7 +13,7 @@ async function moveFile(localFilePath, remoteFilePath) {
       host: process.env.FTP_HOST,
       user: process.env.FTP_USER,
       password: process.env.FTP_PASS,
-      secure: false,
+      secure: true,
       secureOptions: {
         rejectUnauthorized: false,
       },
