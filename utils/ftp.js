@@ -16,7 +16,7 @@ async function moveFile(localFilePath, remoteFilePath) {
       secure: "implicit",
       secureOptions: {
         rejectUnauthorized: false,
-        minVersion: "TLSv1.3",
+        minVersion: "TLSv1.2",
       },
     });
 
