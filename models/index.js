@@ -21,7 +21,7 @@ class Model {
   }
 
   static async getAlldevice() {
-    const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias ILIKE 'kiosk%' `;
+    const query = `SELECT id, dev_alias, ip_address FROM acc_device WHERE dev_alias ILIKE 'kiosk%' ORDER BY dev_alias ASC`;
     const { rows } = await pool.query(query);
     return rows;
   }

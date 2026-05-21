@@ -67,6 +67,7 @@
       <div class="container">
         <% cameras.forEach(c => { %>
         <div>
+          <div style="text-align: center; font-weight: bold;background-color: blue;color: white;padding: 4px;"><%= c.dev_alias %></div>
           <canvas id="canvas<%= c.id %>"></canvas>
           <div class="userinfo" id="userinfo<%= c.id %>">&nbsp;</div>
         </div>
