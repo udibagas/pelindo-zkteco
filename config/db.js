@@ -24,15 +24,27 @@ const dbConfig = {
 const pool = new Pool(dbConfig);
 const client = new Client(dbConfig);
 
-client
-  .connect()
-  .then(() => client.query("LISTEN api_channel"))
-  .catch((err) => logger.error(err.message));
+function connect() {
+  client
+    .connect()
+    .then(() => client.query("LISTEN api_channel"))
+    .catch((err) => {
+      logger.error(err.message);
+    });
 
-client.on("notification", (msg) => {
-  processNotification(msg, pool)
-    .then((r) => logger.info(JSON.stringify(r)))
-    .catch((err) => logger.error(err.message));
-});
+  client.on("notification", (msg) => {
+    processNotification(msg, pool)
+      .then((r) => logger.info(JSON.stringify(r)))
+      .catch((err) => logger.error(err.message));
+  });
+
+  client.on("error", (err) => {
+    logger.error(err.message);
+    client.removeAllListeners();
+    setTimeout(() => connect, 3000);
+  });
+}
+
+connect();
 
 module.exports = { pool, client };
