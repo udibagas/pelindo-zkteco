@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logs</title>
+    <link rel="stylesheet" href="/style.css" />
+
+    <style>
+      input {
+        padding: 10px 15px; 
+        border: 1px solid #ddd; 
+        border-radius: 4px; 
+        width: 200px;
+      }
+
+      button, a.btn {
+        padding: 10px 15px; 
+        border: 1px solid #ddd; 
+        border-radius: 4px; 
+        background-color: rgb(48, 48, 198);
+        color: white;
+        text-decoration: none;
+      }
+
+      .error {
+        padding: 15px;
+        border: 1px solid red;
+        border-radius: 4px;
+        color: red;
+        font-weight: bold;
+        background-color: rgb(241, 185, 185);
+      }
+
+      pre {
+        width: 600px;
+        background-color: black;
+        color: white;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('_nav' , { page: '/transactions'}) %>
+
+    <div class="container-fluid">
+      <div style="display: flex; gap: 20px; align-items: flex-start;">
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+          <% if (err) { %>
+           <div class="error"><%= err.message %></div>
+          <% } %>
+
+          <form style="display: flex; gap: 10px;">
+            <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
+            <input type="date" name="date" placeholder="Select Date" value="<%= date %>" />
+            <button>Search</button>
+            <a class="btn" href="/transactions">Refresh</a>
+          </form>
+
+          <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
+            <table class="striped-table">
+              <thead>
+                <tr>
+                  <th>Time In</th>
+                  <th>Gate</th>
+                  <th>Driver Name</th>
+                  <th>Driver ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% rows.forEach(r => { %>
+                  <tr onclick="showDetail('<%= r.id %>')">
+                    <td><%= r.event_time.toLocaleString('id-ID') %></td>
+                    <td><%= r.dev_alias %></td>
+                    <td><%= r.name %></td>
+                    <td><%= r.pin %></td>
+                  </tr>
+                <% }) %>
+                
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <pre id="detail"></pre>
+      </div>
+    </div>
+
+    <script>
+      async function showDetail(id) {
+        const detailEl = document.querySelector('#detail');
+        if (!detailEl) return;
+
+        const res = await fetch(`/transactions/${id}`);
+        const data = await res.json();
+        detailEl.innerHTML = JSON.stringify(data, null, 2);
+      }
+    </script>
+  </body>
+</html>
