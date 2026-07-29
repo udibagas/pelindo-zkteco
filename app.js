@@ -5,6 +5,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 const { proxy, scriptUrl } = require("rtsp-relay")(app);
+app.use(express.static("public"));
 app.use("/upload", express.static("upload"));
 app.use("/face", express.static("face"));
 app.use(express.urlencoded({ extended: true }));

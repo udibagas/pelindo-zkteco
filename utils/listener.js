@@ -54,11 +54,25 @@ async function processNotification(msg, pool) {
     .then((r) => logger.info(JSON.stringify(r)))
     .catch((e) => logger.error(e.message));
 
+  const log = await saveLog(data, logResult, pool);
+
   logger.info(`Sending data to api: ${JSON.stringify(logResult)}`);
 
   return axios
     .post(API_URL, logResult, { auth: { username, password } })
-    .then((r) => r.data);
+    .then(async (r) => {
+      await updateLog(r.data, log.id, true, pool);
+      return r.data;
+    })
+    .catch(async (e) => {
+      await updateLog(
+        e.response?.data ?? { message: e.message },
+        log.id,
+        false,
+        pool,
+      );
+      throw e;
+    });
 }
 
 async function getDeviceById(dev_id, pool) {
@@ -66,6 +80,39 @@ async function getDeviceById(dev_id, pool) {
   const { rows, rowCount } = await pool.query(query, [dev_id]);
   if (rowCount === 0) throw new Error("Device not found");
   return rows[0];
+}
+
+async function saveLog(data, logResult, pool) {
+  const query = `
+    INSERT INTO "api_logs"
+      (log_id, time, device_id, driver_id, driver_name, raw_log, api_payload)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *
+  `;
+
+  const res = await pool.query(query, [
+    logResult.id,
+    logResult.time,
+    logResult.device_id,
+    logResult.driver_id,
+    logResult.driver_name,
+    data,
+    logResult,
+  ]);
+
+  return res.rows[0];
+}
+
+async function updateLog(data, id, status, pool) {
+  const query = `
+    UPDATE "api_logs"
+    SET
+      api_response = $1,
+      response_status = $2
+    WHERE id = $3
+  `;
+
+  return pool.query(query, [JSON.stringify(data), status, id]);
 }
 
 module.exports = { processNotification };
