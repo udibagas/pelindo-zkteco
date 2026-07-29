@@ -69,8 +69,14 @@
           const userInfo = document.getElementById(`userinfo${data.dev_id}`);
 
           if (userInfo) {
-            userInfo.innerHTML = data.name;
-            userInfo.style.backgroundColor = "green";
+            if (data.name) {
+              userInfo.innerHTML = data.name;
+              userInfo.style.backgroundColor = "green";
+            } else {
+              userInfo.innerHTML = "Unregistered";
+              userInfo.style.backgroundColor = "orange";
+            }
+            
             setTimeout(() => {
               userInfo.innerHTML = "No face detected";
               userInfo.style.backgroundColor = "red";
