@@ -98,7 +98,7 @@
             <tbody>
               <% rows.forEach(r => { %>
                 <tr id="row-<%= r.id %>" data-row="<%= JSON.stringify(r) %>" onclick="showDetail(<%= r.id %>)">
-                  <td><%= r.time.toUTCString() %></td>
+                  <td><%= r.time.toLocaleString('id-ID', { }) %></td>
                   <td><%= r.device_id %></td>
                   <td><%= r.driver_name %></td>
                   <td><%= r.driver_id %></td>
