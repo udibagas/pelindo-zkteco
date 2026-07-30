@@ -74,19 +74,19 @@ nav {
   height: 60px;
   display: flex;
   align-items: center;
-  gap: 24px;
 
   a {
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     text-decoration: none;
-    font-weight: bold;
+    line-height: 60px;
+    padding: 0 20px;
   }
 }
 
 a:hover,
 a.active {
-  text-decoration: underline;
+  background-color: navy;
 }
 
 .container-fluid {
@@ -122,4 +122,12 @@ a.active {
 /* Hover effect (optional) */
 .striped-table tr:hover {
   background-color: #e8e8e8;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff; /* Mandatory: hides scrolling data behind it */
+  z-index: 1; /* Keeps header stacked above body cells */
+  box-shadow: inset 0 -2px 0 #000; /* Prevents border-collapse glitch */
 }

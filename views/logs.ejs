@@ -85,36 +85,39 @@
             <a class="btn" href="/logs">Refresh</a>
           </form>
 
-          <table class="striped-table">
-            <thead>
-              <tr>
-                <th>Time In</th>
-                <th>Gate</th>
-                <th>Driver Name</th>
-                <th>Driver ID</th>
-                <th style="text-align: center;">API Response Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% rows.forEach(r => { %>
-                <tr id="row-<%= r.id %>" data-row="<%= JSON.stringify(r) %>" onclick="showDetail(<%= r.id %>)">
-                  <td><%= r.time.toLocaleString('id-ID') %></td>
-                  <td><%= r.device_id %></td>
-                  <td><%= r.driver_name %></td>
-                  <td><%= r.driver_id %></td>
-                  <td style="text-align: center;">
-                    <span class="status <%= r.response_status === true ? 'success' : r.response_status === false ? 'failed' : 'pending' %>">
-                      <%= r.response_status === true ? 'Success' : r.response_status === false ? 'Failed' : 'Pending' %>
-                    </span>
-                  </td>
+          <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
+            <table class="striped-table">
+              <thead>
+                <tr>
+                  <th>Time In</th>
+                  <th>Gate</th>
+                  <th>Driver Name</th>
+                  <th>Driver ID</th>
+                  <th style="text-align: center;">API Response Status</th>
                 </tr>
-              <% }) %>
-              
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% rows.forEach(r => { %>
+                  <tr id="row-<%= r.id %>" data-row="<%= JSON.stringify(r) %>" onclick="showDetail(<%= r.id %>)">
+                    <td><%= r.time.toLocaleString('id-ID') %></td>
+                    <td><%= r.device_id %></td>
+                    <td><%= r.driver_name %></td>
+                    <td><%= r.driver_id %></td>
+                    <td style="text-align: center;">
+                      <span class="status <%= r.response_status === true ? 'success' : r.response_status === false ? 'failed' : 'pending' %>">
+                        <%= r.response_status === true ? 'Success' : r.response_status === false ? 'Failed' : 'Pending' %>
+                      </span>
+                    </td>
+                  </tr>
+                <% }) %>
+                
+              </tbody>
+            </table>
+          </div>
         </div>
+
         <div id="detail" class="detail">
-          <table class="striped-table" style="margin-top: 52px; border: 1px solid #ddd;">
+          <table class="striped-table" style="margin-top: 53px; border: 1px solid #ddd;">
             <thead>
               <tr>
                 <th style="width: 200px">Parameter</th>
@@ -148,13 +151,13 @@
                   <pre id="api_response"></pre>
                 </td>
               </tr>
-               <tr>
+              <tr>
                 <td style="font-weight: bold;">Raw Log</td>
                 <td>
                   <pre id="raw_log"></pre>
                 </td>
               </tr>
-               <tr>
+              <tr>
                 <td style="font-weight: bold;">API Payload</td>
                 <td>
                   <pre id="api_payload"></pre>
