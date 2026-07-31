@@ -2,41 +2,53 @@ const { Router } = require("express");
 const { pool } = require("../config/db");
 const router = new Router();
 
-router.get("/transactions", (req, res) => {
-  let { keyword, date } = req.query;
+router.get("/transactions", async (req, res) => {
+  let { keyword, from, to, action } = req.query;
 
   let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction" WHERE dev_alias ILIKE '%kiosk%'`;
 
   if (keyword) {
     query += `
       AND
-        name ILIKE '%${keyword}%' OR
-        pin ILIKE '%${keyword}%' OR
-        dev_alias ILIKE '%${keyword}%'
+        name ILIKE $1 OR
+        pin ILIKE $1 OR
+        dev_alias ILIKE $1
     `;
   }
 
-  if (date) {
-    query += `
-      AND event_time BETWEEN '${date} 00:00:00' AND '${date} 23:59:59.9999'
-    `;
+  if (from && to) {
+    from = `${from} 00:00:00`;
+    to = `${to} 23:59:59.9999`;
+    query += " AND event_time BETWEEN $2 AND $3 ";
   }
 
   query += " ORDER BY event_time DESC";
 
-  if (!date) {
+  if (!from || !to) {
     query += " LIMIT 100";
   }
 
-  pool.query(query, (err, result) => {
-    if (err) {
-      return res.render("transactions", { err, rows: [], date, keyword });
+  try {
+    const { rows } = await pool.query(query, []);
+    if (action == "export") {
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
+
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=transactions.xlsx",
+      );
+      const workbook = exportExcel(rows);
+      await workbook.xlsx.write(res);
+      return res.end();
     }
 
-    const { rows } = result;
-
-    res.render("transactions", { err, rows, date, keyword });
-  });
+    res.render("transactions", { err: null, rows, from, to, keyword });
+  } catch (err) {
+    return res.render("transactions", { err, rows: [], from, to, keyword });
+  }
 });
 
 router.get("/transactions/:id", (req, res) => {

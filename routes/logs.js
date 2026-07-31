@@ -33,13 +33,23 @@ router.get("/logs", async (req, res) => {
 
   try {
     if (action == "export") {
+      const workbook = exportExcel(
+        rows.map((r) => ({
+          time: r.time.toLocaleString("id-ID"),
+          gate: r.device_id,
+          driver_name: r.driver_name,
+          driver_id: r.driver_id,
+          status: r.response_status,
+        })),
+      );
+
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       );
 
       res.setHeader("Content-Disposition", "attachment; filename=logs.xlsx");
-      const workbook = exportExcel(rows);
+
       await workbook.xlsx.write(res);
       return res.end();
     }
