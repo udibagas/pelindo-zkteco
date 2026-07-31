@@ -4,7 +4,7 @@ function exportExcel(data = [], withStatus = true) {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Data Export");
 
-  worksheet.columns = [
+  const columns = [
     {
       header: "Time In",
       key: "time",
@@ -25,12 +25,17 @@ function exportExcel(data = [], withStatus = true) {
       key: "driver_id",
       width: 30,
     },
-    {
+  ];
+
+  if (withStatus) {
+    columns.push({
       header: "API Response Status",
       key: "status",
       width: 30,
-    },
-  ];
+    });
+  }
+
+  worksheet.columns = columns;
 
   data.forEach((row) => {
     worksheet.addRow(row);

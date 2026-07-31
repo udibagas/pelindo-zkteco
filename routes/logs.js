@@ -7,20 +7,25 @@ router.get("/logs", async (req, res) => {
   let { keyword, from, to, action } = req.query;
 
   let query = `SELECT * FROM "api_logs" WHERE 1 = 1`;
+  const params = [];
 
   if (keyword) {
     query += `
-      AND
-        driver_id ILIKE '%${keyword}%' OR
-        driver_name ILIKE '%${keyword}%' OR
-        device_id ILIKE '%${keyword}%'
+      AND (
+        driver_id ILIKE $1 OR
+        driver_name ILIKE $1 OR
+        device_id ILIKE $1
+      )
     `;
+
+    params.push(`%${keyword}%`);
   }
 
-  if (from) {
-    query += `
-      AND time BETWEEN '${from} 00:00:00' AND '${to} 23:59:59.9999'
-    `;
+  if (from && to) {
+    from = `${from} 00:00:00`;
+    to = `${to} 23:59:59.9999`;
+    query += " AND time BETWEEN $X AND $Y";
+    params.push(from, to);
   }
 
   query += " ORDER BY id DESC";
@@ -29,9 +34,17 @@ router.get("/logs", async (req, res) => {
     query += " LIMIT 100";
   }
 
-  const { rows } = await pool.query(query);
+  if (params.length == 2) {
+    query = query.replace("X", "1").replace("Y", "2");
+  }
+
+  if (params.length == 3) {
+    query = query.replace("X", "2").replace("Y", "3");
+  }
 
   try {
+    const { rows } = await pool.query(query, params);
+
     if (action == "export") {
       const workbook = exportExcel(
         rows.map((r) => ({

@@ -1,25 +1,31 @@
 const { Router } = require("express");
 const { pool } = require("../config/db");
+const exportExcel = require("../utils/excel");
 const router = new Router();
 
 router.get("/transactions", async (req, res) => {
   let { keyword, from, to, action } = req.query;
 
   let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction" WHERE dev_alias ILIKE '%kiosk%'`;
+  const params = [];
 
   if (keyword) {
     query += `
-      AND
+      AND (
         name ILIKE $1 OR
         pin ILIKE $1 OR
         dev_alias ILIKE $1
+      )
     `;
+
+    params.push(`%${keyword}%`);
   }
 
   if (from && to) {
     from = `${from} 00:00:00`;
     to = `${to} 23:59:59.9999`;
-    query += " AND event_time BETWEEN $2 AND $3 ";
+    query += " AND event_time BETWEEN $X AND $Y ";
+    params.push(from, to);
   }
 
   query += " ORDER BY event_time DESC";
@@ -28,8 +34,27 @@ router.get("/transactions", async (req, res) => {
     query += " LIMIT 100";
   }
 
+  if (params.length == 2) {
+    query = query.replace("X", "1").replace("Y", "2");
+  }
+
+  if (params.length == 3) {
+    query = query.replace("X", "2").replace("Y", "3");
+  }
+
   try {
-    const { rows } = await pool.query(query, []);
+    const { rows } = await pool.query(query, params);
+
+    const workbook = exportExcel(
+      rows.map((r) => ({
+        time: r.event_time,
+        gate: r.dev_alias,
+        driver_name: r.name,
+        driver_id: r.pin,
+      })),
+      false,
+    );
+
     if (action == "export") {
       res.setHeader(
         "Content-Type",
@@ -40,7 +65,7 @@ router.get("/transactions", async (req, res) => {
         "Content-Disposition",
         "attachment; filename=transactions.xlsx",
       );
-      const workbook = exportExcel(rows);
+
       await workbook.xlsx.write(res);
       return res.end();
     }
