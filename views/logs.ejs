@@ -16,6 +16,11 @@
         border: 1px solid #ddd; 
         border-radius: 4px; 
         width: 200px;
+
+      }
+
+      input[type=date] {
+        width: 150px;
       }
 
       button, a.btn {
@@ -78,10 +83,15 @@
            <div class="error"><%= err.message %></div>
           <% } %>
 
-          <form style="display: flex; gap: 10px;">
+          <form style="display: flex; gap: 10px; align-items: center;">
             <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
-            <input type="date" name="date" placeholder="Select Date" value="<%= date %>" />
+            <input type="date" name="from" value="<%= from %>" />
+            <div>
+              -
+            </div>
+            <input type="date" name="to" value="<%= to %>" />
             <button>Search</button>
+            <button name="action" value="export">Export</button>
             <a class="btn" href="/logs">Refresh</a>
           </form>
 
