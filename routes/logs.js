@@ -6,7 +6,7 @@ const router = new Router();
 router.get("/logs", async (req, res) => {
   let { keyword, from, to, action } = req.query;
 
-  let query = `SELECT * FROM "api_logs" WHERE 1 = 1`;
+  let query = `SELECT id, time, device_id, driver_name, driver_id, response_status FROM "api_logs" WHERE 1 = 1`;
   const params = [];
 
   if (keyword) {
@@ -83,9 +83,9 @@ router.get("/logs/:id", async (req, res) => {
       return res.status(404).json({ message: "Log not found" });
     }
 
-    return result.rows[0];
+    res.json(result.rows[0]);
   } catch (error) {
-    rer.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

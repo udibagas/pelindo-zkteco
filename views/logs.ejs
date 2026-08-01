@@ -64,8 +64,8 @@
                 -
               </div>
               <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
-              <button class="btn btn-primary">Search</button>
-              <button class="btn btn-primary" name="action" value="export">Export</button>
+              <button class="btn btn-primary">🔍 Search</button>
+              <button class="btn btn-primary" name="action" value="export">📑 Export</button>
               <a class="btn btn-primary" href="/logs">Refresh</a>
             </form>
 
@@ -90,7 +90,7 @@
               </thead>
               <tbody>
                 <% rows.forEach(r => { %>
-                  <tr id="row-<%= r.id %>" data-row="<%= JSON.stringify(r) %>" onclick="showDetail(<%= r.id %>)">
+                  <tr onclick="showDetail('<%= r.id %>')">
                     <td><%= r.time.toLocaleString('id-ID') %></td>
                     <td><%= r.device_id %></td>
                     <td><%= r.driver_name %></td>
@@ -169,12 +169,20 @@
     </div>
 
     <script>
-      function showDetail(id) {
-        const row = document.querySelector(`#row-${id}`);
+      async function showDetail(id) {
+        try {
+          const res = await fetch(`/logs/${id}`)
+          const data = await res.json();
 
-        if (row) {
-          try {
-            const data = JSON.parse(row.dataset.row);
+          if (res.status == 404) {
+            throw new Error("Log not found")
+          }
+
+          if (res.status == 500) {
+            throw new Error("Internal server error")
+          }
+
+          if (res.status == 200) {
             const logIdEl = document.querySelector('#log_id');
             const timeEl = document.querySelector('#time');
             const driverIdEl = document.querySelector('#driver_id');
@@ -195,10 +203,38 @@
 
             const dialog = document.querySelector('dialog');
             dialog.showModal();
-          } catch (error) {
-            console.error(error.message);
           }
+        } catch (error) {
+          console.error(error.message)
         }
+
+        // if (row) {
+        //   try {
+        //     const data = JSON.parse(row.dataset.row);
+        //     const logIdEl = document.querySelector('#log_id');
+        //     const timeEl = document.querySelector('#time');
+        //     const driverIdEl = document.querySelector('#driver_id');
+        //     const driverNameEl = document.querySelector('#driver_name');
+        //     const apiResponseEl = document.querySelector('#api_response');
+        //     const responseStatusEl = document.querySelector('#response_status');
+        //     const rawLogEl = document.querySelector('#raw_log');
+        //     const apiPayloadEl = document.querySelector('#api_payload');
+
+        //     logIdEl.innerHTML = data.log_id;
+        //     timeEl.innerHTML = data.time;
+        //     driverIdEl.innerHTML = data.driver_id;
+        //     driverNameEl.innerHTML = data.driver_name;
+        //     apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
+        //     responseStatusEl.innerHTML = data.response_status;
+        //     rawLogEl.innerHTML = JSON.stringify(data.raw_log, null, 2);
+        //     apiPayloadEl.innerHTML = JSON.stringify(data.api_payload, null, 2);
+
+        //     const dialog = document.querySelector('dialog');
+        //     dialog.showModal();
+        //   } catch (error) {
+        //     console.error(error.message);
+        //   }
+        // }
       }
     </script>
   </body>
