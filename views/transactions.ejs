@@ -30,67 +30,65 @@
     <%- include('_nav' , { page: '/transactions'}) %>
 
     <div class="container-fluid">
-      <div style="display: flex; gap: 20px; align-items: flex-start;">
-        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
-          <% if (err) { %>
-           <div class="error"><%= err.message %></div>
-          <% } %>
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+        <% if (err) { %>
+          <div class="error"><%= err.message %></div>
+        <% } %>
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <form style="display: flex; gap: 10px; align-items: center;">
-              <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
-              <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
-              <div>
-                -
-              </div>
-              <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
-              <button class="btn btn-primary">Search</button>
-              <button class="btn btn-primary" name="action" value="export">Export</button>
-              <a class="btn btn-primary" href="/logs">Refresh</a>
-            </form>
-
-            <div style="display: flex; gap: 5px">
-              <a class="btn" href="?page=1">&larr; Prev</a>
-              <a class="btn" href="?page=2">Next &rarr;</a>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <form style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
+            <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
+            <div>
+              -
             </div>
-          </div>
+            <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
+            <button class="btn btn-primary">Search</button>
+            <button class="btn btn-primary" name="action" value="export">Export</button>
+            <a class="btn btn-primary" href="/logs">Refresh</a>
+          </form>
 
-          <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
-            <table class="striped-table">
-              <thead>
-                <tr>
-                  <th>Time In</th>
-                  <th>Gate</th>
-                  <th>Driver Name</th>
-                  <th>Driver ID</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% rows.forEach(r => { %>
-                  <tr onclick="showDetail('<%= r.id %>')">
-                    <td><%= r.event_time.toLocaleString('id-ID') %></td>
-                    <td><%= r.dev_alias %></td>
-                    <td><%= r.name %></td>
-                    <td><%= r.pin %></td>
-                  </tr>
-                <% }) %>
-                
-              </tbody>
-            </table>
+          <div style="display: flex; gap: 5px">
+            <a class="btn" href="?page=1">&larr; Prev</a>
+            <a class="btn" href="?page=2">Next &rarr;</a>
           </div>
         </div>
 
-        <dialog id="my-dialog">
-          <div class="dialog-header">
-            <div> Transaction Log Detail </div>
-            <button class="btn btn-circle" commandfor="my-dialog" command="close">X</button>
-          </div>
-          <div class="dialog-body">
-            <pre id="detail">No Data selected</pre>
-            
-          </div>
-        </dialog>
+        <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
+          <table class="striped-table">
+            <thead>
+              <tr>
+                <th>Time In</th>
+                <th>Gate</th>
+                <th>Driver Name</th>
+                <th>Driver ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% rows.forEach(r => { %>
+                <tr onclick="showDetail('<%= r.id %>')">
+                  <td><%= r.event_time.toLocaleString('id-ID') %></td>
+                  <td><%= r.dev_alias %></td>
+                  <td><%= r.name %></td>
+                  <td><%= r.pin %></td>
+                </tr>
+              <% }) %>
+              
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <dialog id="my-dialog">
+        <div class="dialog-header">
+          <div> Transaction Log Detail </div>
+          <button class="btn btn-circle" commandfor="my-dialog" command="close">X</button>
+        </div>
+        <div class="dialog-body">
+          <pre id="detail">No Data selected</pre>
+          
+        </div>
+      </dialog>
     </div>
 
     <script>
