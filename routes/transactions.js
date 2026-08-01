@@ -4,19 +4,14 @@ const exportExcel = require("../utils/excel");
 const router = new Router();
 
 router.get("/transactions", async (req, res) => {
-  let { keyword, from, to, action } = req.query;
+  let { keyword, from, to, action, page = 1, pageSize = 100 } = req.query;
 
-  let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction" WHERE dev_alias ILIKE '%kiosk%'`;
+  let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction"`;
+  let where = " WHERE dev_alias ILIKE '%kiosk%'";
   const params = [];
 
   if (keyword) {
-    query += `
-      AND (
-        name ILIKE $1 OR
-        pin ILIKE $1 OR
-        dev_alias ILIKE $1
-      )
-    `;
+    where += " AND (name ILIKE $1 OR pin ILIKE $1 OR dev_alias ILIKE $1)";
 
     params.push(`%${keyword}%`);
   }
@@ -24,15 +19,19 @@ router.get("/transactions", async (req, res) => {
   if (from && to) {
     from = `${from} 00:00:00`;
     to = `${to} 23:59:59.9999`;
-    query += " AND event_time BETWEEN $X AND $Y ";
+    where += " AND event_time BETWEEN $X AND $Y ";
     params.push(from, to);
   }
 
+  query += where;
   query += " ORDER BY event_time DESC";
 
-  if (!from || !to) {
-    query += " LIMIT 100";
-  }
+  // pagination
+  pageSize = isNaN(Number(pageSize)) || pageSize > 100 ? 100 : Number(pageSize);
+  query += ` LIMIT ${pageSize}`;
+  page = isNaN(Number(page)) ? 1 : Number(page);
+  const skip = (page - 1) * pageSize;
+  query += ` OFFSET ${skip}`;
 
   if (params.length == 2) {
     query = query.replace("X", "1").replace("Y", "2");
@@ -70,9 +69,25 @@ router.get("/transactions", async (req, res) => {
       return res.end();
     }
 
-    res.render("transactions", { err: null, rows, from, to, keyword });
+    res.render("transactions", {
+      err: null,
+      rows,
+      from,
+      to,
+      keyword,
+      page,
+      pageSize,
+    });
   } catch (err) {
-    return res.render("transactions", { err, rows: [], from, to, keyword });
+    return res.render("transactions", {
+      err,
+      rows: [],
+      from,
+      to,
+      keyword,
+      page,
+      pageSize,
+    });
   }
 });
 
