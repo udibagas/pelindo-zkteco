@@ -74,7 +74,6 @@
                   <td><%= r["Driver ID"] %></td>
                 </tr>
               <% }) %>
-              
             </tbody>
           </table>
         </div>
@@ -87,7 +86,6 @@
         </div>
         <div class="dialog-body">
           <pre id="detail">No Data selected</pre>
-          
         </div>
       </dialog>
     </div>
@@ -103,13 +101,11 @@
         fetchData();
       });
 
-      // handle export button
       const exportBtn = document.querySelector('#btn-export');
       exportBtn.addEventListener('click', (e) => {
         e.preventDefault();
         exportToExcel();
       });
-
     </script>
   </body>
 </html>
