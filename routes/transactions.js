@@ -78,17 +78,17 @@ router.get("/transactions", async (req, res) => {
       nextPage = 0;
     }
 
-    const workbook = exportExcel(
-      rows.map((r) => ({
-        time: r.event_time,
-        gate: r.dev_alias,
-        driver_name: r.name,
-        driver_id: r.pin,
-      })),
-      false,
-    );
-
     if (action == "export") {
+      const workbook = exportExcel(
+        rows.map((r) => ({
+          time: r.event_time,
+          gate: r.dev_alias,
+          driver_name: r.name,
+          driver_id: r.pin,
+        })),
+        false,
+      );
+
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

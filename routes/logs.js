@@ -4,35 +4,49 @@ const exportExcel = require("../utils/excel");
 const router = new Router();
 
 router.get("/logs", async (req, res) => {
-  let { keyword, from, to, action } = req.query;
+  const defaultPageSize = 100;
+  const maxPageSize = 1000;
 
-  let query = `SELECT id, time, device_id, driver_name, driver_id, response_status FROM "api_logs" WHERE 1 = 1`;
+  let {
+    keyword,
+    from,
+    to,
+    action,
+    page = 1,
+    pageSize = defaultPageSize,
+  } = req.query;
+
+  let query = `SELECT id, time, device_id, driver_name, driver_id, response_status FROM "api_logs"`;
+  let where = " WHERE 1 = 1";
   const params = [];
 
   if (keyword) {
-    query += `
-      AND (
-        driver_id ILIKE $1 OR
-        driver_name ILIKE $1 OR
-        device_id ILIKE $1
-      )
-    `;
-
+    where +=
+      " AND (driver_id ILIKE $1 OR driver_name ILIKE $1 OR device_id ILIKE $1)";
     params.push(`%${keyword}%`);
   }
 
   if (from && to) {
     from = `${from} 00:00:00`;
     to = `${to} 23:59:59.9999`;
-    query += " AND time BETWEEN $X AND $Y";
+    where += " AND time BETWEEN $X AND $Y";
     params.push(from, to);
   }
 
+  query += where;
   query += " ORDER BY id DESC";
 
-  if (!from) {
-    query += " LIMIT 100";
-  }
+  // pagination
+  pageSize =
+    isNaN(Number(pageSize)) || pageSize > maxPageSize
+      ? defaultPageSize
+      : Number(pageSize);
+
+  query += ` LIMIT ${pageSize}`;
+
+  page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
+  const skip = (page - 1) * pageSize;
+  query += ` OFFSET ${skip}`;
 
   if (params.length == 2) {
     query = query.replace("X", "1").replace("Y", "2");
@@ -42,8 +56,27 @@ router.get("/logs", async (req, res) => {
     query = query.replace("X", "2").replace("Y", "3");
   }
 
+  // default value for pagination
+  let total = 0;
+  let dataFrom = 0;
+  let dataTo = page * pageSize;
+  let prevPage = page - 1;
+  let nextPage = page + 1;
+
   try {
     const { rows } = await pool.query(query, params);
+
+    const { rows: rowsCount } = await pool.query(
+      `SELECT COUNT(id) FROM "api_logs" ${where}`,
+    );
+
+    total = rowsCount[0].count;
+    dataFrom = (page - 1) * pageSize + 1;
+
+    if (page * pageSize > total) {
+      dataTo = total;
+      nextPage = 0;
+    }
 
     if (action == "export") {
       const workbook = exportExcel(
@@ -67,9 +100,35 @@ router.get("/logs", async (req, res) => {
       return res.end();
     }
 
-    res.render("logs", { err: null, rows, from, to, keyword });
+    res.render("logs", {
+      err: null,
+      rows,
+      from,
+      to,
+      keyword,
+      page,
+      pageSize,
+      total,
+      dataFrom,
+      dataTo,
+      prevPage,
+      nextPage,
+    });
   } catch (err) {
-    res.render("logs", { err, rows: [], from, to, keyword });
+    res.render("logs", {
+      err,
+      rows: [],
+      from,
+      to,
+      keyword,
+      page,
+      pageSize,
+      total,
+      dataFrom,
+      dataTo,
+      prevPage,
+      nextPage,
+    });
   }
 });
 

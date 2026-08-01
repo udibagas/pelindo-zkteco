@@ -69,9 +69,12 @@
               <a class="btn btn-primary" href="/logs">Refresh</a>
             </form>
 
-            <div style="display: flex; gap: 5px">
-              <a class="btn" href="?page=1">&larr; Prev</a>
-              <a class="btn" href="?page=2">Next &rarr;</a>
+            <div style="display: flex; gap: 5px; align-items: center;">
+              <span style="margin-right: 10px;">
+                <%= dataFrom %> - <%= dataTo %> of <%= total %>
+              </span>
+              <button class="btn" onclick="goToPage('<%= prevPage %>')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
+              <button class="btn" onclick="goToPage('<%= nextPage %>')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
             </div>
           </div>
 
@@ -207,34 +210,24 @@
         } catch (error) {
           console.error(error.message)
         }
+      }
 
-        // if (row) {
-        //   try {
-        //     const data = JSON.parse(row.dataset.row);
-        //     const logIdEl = document.querySelector('#log_id');
-        //     const timeEl = document.querySelector('#time');
-        //     const driverIdEl = document.querySelector('#driver_id');
-        //     const driverNameEl = document.querySelector('#driver_name');
-        //     const apiResponseEl = document.querySelector('#api_response');
-        //     const responseStatusEl = document.querySelector('#response_status');
-        //     const rawLogEl = document.querySelector('#raw_log');
-        //     const apiPayloadEl = document.querySelector('#api_payload');
+      function goToPage(page) {
+        const params = new URLSearchParams(window.location.search);
+        const pageSize = params.get('pageSize') || 100;
+        const keyword = params.get('keyword') || '';
+        const from = params.get('from') || '';
+        const to = params.get('to') || '';
 
-        //     logIdEl.innerHTML = data.log_id;
-        //     timeEl.innerHTML = data.time;
-        //     driverIdEl.innerHTML = data.driver_id;
-        //     driverNameEl.innerHTML = data.driver_name;
-        //     apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
-        //     responseStatusEl.innerHTML = data.response_status;
-        //     rawLogEl.innerHTML = JSON.stringify(data.raw_log, null, 2);
-        //     apiPayloadEl.innerHTML = JSON.stringify(data.api_payload, null, 2);
+        const queryString = new URLSearchParams({
+          page,
+          pageSize,
+          keyword,
+          from,
+          to
+        }).toString()
 
-        //     const dialog = document.querySelector('dialog');
-        //     dialog.showModal();
-        //   } catch (error) {
-        //     console.error(error.message);
-        //   }
-        // }
+        window.location.href = `/logs?${queryString}`;
       }
     </script>
   </body>
