@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test</title>
+
+    <style>
+      dialog {
+        padding: 24px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        width: 100%;
+      }
+
+      /* Style the dimmed background overlay */
+      dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+      }
+    </style>
+  </head>
+  <body>
+    <button command="show-modal" commandfor="my-dialog">Open dialog</button>
+
+    <dialog id="my-dialog">
+      <div>
+        <p>This dialog was opened using an invoker command.</p>
+        <button commandfor="my-dialog" command="close">Close</button>
+      </div>
+    </dialog>
+  </body>
+</html>

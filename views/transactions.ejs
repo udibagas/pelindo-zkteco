@@ -7,22 +7,6 @@
     <link rel="stylesheet" href="/style.css" />
 
     <style>
-      input {
-        padding: 10px 15px; 
-        border: 1px solid #ddd; 
-        border-radius: 4px; 
-        width: 200px;
-      }
-
-      button, a.btn {
-        padding: 10px 15px; 
-        border: 1px solid #ddd; 
-        border-radius: 4px; 
-        background-color: rgb(48, 48, 198);
-        color: white;
-        text-decoration: none;
-      }
-
       .error {
         padding: 15px;
         border: 1px solid red;
@@ -33,7 +17,7 @@
       }
 
       pre {
-        width: 600px;
+        width: 100%;
         background-color: black;
         color: white;
         padding: 10px;
@@ -52,17 +36,24 @@
            <div class="error"><%= err.message %></div>
           <% } %>
 
-          <form style="display: flex; gap: 10px; align-items: center;">
-            <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
-            <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
-            <div>
-              -
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <form style="display: flex; gap: 10px; align-items: center;">
+              <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
+              <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
+              <div>
+                -
+              </div>
+              <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
+              <button class="btn btn-primary">Search</button>
+              <button class="btn btn-primary" name="action" value="export">Export</button>
+              <a class="btn btn-primary" href="/logs">Refresh</a>
+            </form>
+
+            <div style="display: flex; gap: 5px">
+              <a class="btn" href="?page=1">&larr; Prev</a>
+              <a class="btn" href="?page=2">Next &rarr;</a>
             </div>
-            <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
-            <button>Search</button>
-            <button name="action" value="export">Export</button>
-            <a class="btn" href="/logs">Refresh</a>
-          </form>
+          </div>
 
           <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
             <table class="striped-table">
@@ -88,18 +79,30 @@
             </table>
           </div>
         </div>
-        <pre id="detail">No Data selected</pre>
+
+        <dialog id="my-dialog">
+          <div class="dialog-header">
+            <div> Transaction Log Detail </div>
+            <button class="btn btn-circle" commandfor="my-dialog" command="close">X</button>
+          </div>
+          <div class="dialog-body">
+            <pre id="detail">No Data selected</pre>
+            
+          </div>
+        </dialog>
       </div>
     </div>
 
     <script>
       async function showDetail(id) {
+        const dialog = document.querySelector('dialog');
         const detailEl = document.querySelector('#detail');
         if (!detailEl) return;
 
         const res = await fetch(`/transactions/${id}`);
         const data = await res.json();
         detailEl.innerHTML = JSON.stringify(data, null, 2);
+        dialog.showModal();
       }
     </script>
   </body>

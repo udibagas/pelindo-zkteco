@@ -11,28 +11,6 @@
         height: calc(100vh - 100px); 
       }
 
-      input {
-        padding: 10px 15px; 
-        border: 1px solid #ddd; 
-        border-radius: 4px; 
-        width: 200px;
-
-      }
-
-      input[type=date] {
-        width: 150px;
-      }
-
-      button, a.btn {
-        padding: 10px 15px; 
-        border: 1px solid #ddd; 
-        border-radius: 4px; 
-        background-color: rgb(48, 48, 198);
-        color: white;
-        text-decoration: none;
-      }
-
-
       .status {
         border: 1px solid;
         padding: 5px 10px;
@@ -90,9 +68,9 @@
               -
             </div>
             <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
-            <button>Search</button>
-            <button name="action" value="export">Export</button>
-            <a class="btn" href="/logs">Refresh</a>
+            <button class="btn btn-primary">Search</button>
+            <button class="btn btn-primary" name="action" value="export">Export</button>
+            <a class="btn btn-primary" href="/logs">Refresh</a>
           </form>
 
           <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
