@@ -208,3 +208,17 @@ a.btn.btn-primary {
 .btn:disabled {
   cursor: not-allowed;
 }
+
+#loading-overlay {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  color: white;
+}

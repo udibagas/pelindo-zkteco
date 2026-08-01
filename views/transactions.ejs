@@ -93,7 +93,8 @@
         </div>
       </dialog>
     </div>
-
+    
+    <div id="loading-overlay">Loading...</div>
     <script>
       async function showDetail(id) {
         const dialog = document.querySelector('dialog');
@@ -112,6 +113,9 @@
       }
 
       async function goToPage(route) {
+        const loadingEl = document.querySelector('#loading-overlay');
+        loadingEl.style.display = 'flex';
+
         const params = new URLSearchParams(window.location.search);
         const page = params.get('page') || 1;
         const pageSize = params.get('pageSize') || 100;
@@ -170,6 +174,8 @@
           tableDataEl.innerHTML = tableDataContent.join("\n");
           history.pushState(null, '', url);
         }
+
+        loadingEl.style.display = 'none';
       }
     </script>
   </body>
