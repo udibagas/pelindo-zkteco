@@ -73,4 +73,20 @@ router.get("/logs", async (req, res) => {
   }
 });
 
+router.get("/logs/:id", async (req, res) => {
+  const { id } = req.params;
+  let query = `SELECT * FROM "api_logs" WHERE id = $1`;
+
+  try {
+    const result = await pool.query(query, [id]);
+    if (result.rowCount == 0) {
+      return res.status(404).json({ message: "Log not found" });
+    }
+
+    return result.rows[0];
+  } catch (error) {
+    rer.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
