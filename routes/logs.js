@@ -42,27 +42,28 @@ router.get("/logs", async (req, res) => {
     params.push(from, to);
   }
 
-  query += where;
-  query += " ORDER BY id DESC";
-
-  // pagination
-  pageSize =
-    isNaN(Number(pageSize)) || pageSize > maxPageSize
-      ? defaultPageSize
-      : Number(pageSize);
-
-  query += ` LIMIT ${pageSize}`;
-
-  page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
-  const skip = (page - 1) * pageSize;
-  query += ` OFFSET ${skip}`;
-
   if (params.length == 2) {
-    query = query.replace("X", "1").replace("Y", "2");
+    where = where.replace("X", "1").replace("Y", "2");
   }
 
   if (params.length == 3) {
-    query = query.replace("X", "2").replace("Y", "3");
+    where = where.replace("X", "2").replace("Y", "3");
+  }
+
+  query += where;
+  query += " ORDER BY id DESC";
+
+  if (!action || action !== "export") {
+    pageSize =
+      isNaN(Number(pageSize)) || pageSize > maxPageSize
+        ? defaultPageSize
+        : Number(pageSize);
+
+    query += ` LIMIT ${pageSize}`;
+
+    page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
+    const skip = (page - 1) * pageSize;
+    query += ` OFFSET ${skip}`;
   }
 
   // default value for pagination
