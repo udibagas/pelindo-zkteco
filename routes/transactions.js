@@ -44,17 +44,19 @@ router.get("/transactions", async (req, res) => {
   query += where;
   query += " ORDER BY event_time DESC";
 
-  // pagination
-  pageSize =
-    isNaN(Number(pageSize)) || pageSize > maxPageSize
-      ? defaultPageSize
-      : Number(pageSize);
+  // skip pagination on export
+  if (!action || action !== "export") {
+    pageSize =
+      isNaN(Number(pageSize)) || pageSize > maxPageSize
+        ? defaultPageSize
+        : Number(pageSize);
 
-  query += ` LIMIT ${pageSize}`;
+    query += ` LIMIT ${pageSize}`;
 
-  page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
-  const skip = (page - 1) * pageSize;
-  query += ` OFFSET ${skip}`;
+    page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
+    const skip = (page - 1) * pageSize;
+    query += ` OFFSET ${skip}`;
+  }
 
   // default value for pagination
   let total = 0;
