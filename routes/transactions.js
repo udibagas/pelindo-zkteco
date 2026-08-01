@@ -26,6 +26,10 @@ router.get("/transactions", async (req, res) => {
     params.push(`%${keyword}%`);
   }
 
+  if (!from) {
+    const now = new Date();
+  }
+
   if (from && to) {
     from = `${from} 00:00:00`;
     to = `${to} 23:59:59.9999`;
@@ -107,7 +111,7 @@ router.get("/transactions", async (req, res) => {
     }
 
     const responseData = {
-      err: null,
+      error: null,
       rows,
       from,
       to,
@@ -126,9 +130,9 @@ router.get("/transactions", async (req, res) => {
     }
 
     res.render("transactions", responseData);
-  } catch (err) {
+  } catch (error) {
     const responseData = {
-      err,
+      error,
       rows: [],
       from,
       to,
