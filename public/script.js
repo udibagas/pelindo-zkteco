@@ -78,14 +78,27 @@ function renderTableData(rows) {
   const tableDataContent = [];
 
   for (const r of rows) {
-    tableDataContent.push(`
+    let row = `
       <tr onclick="showDetail('${r.id}')">
         <td>${new Date(r.Time).toLocaleString()}</td>
         <td>${r.Gate}</td>
         <td>${r["Driver Name"]}</td>
         <td>${r["Driver ID"]}</td>
-      </tr>
-    `);
+    `;
+
+    if (path == "logs") {
+      row += `
+        <td style="text-align: center;">
+          <span class="status ${r.status === true ? "success" : r.status === false ? "failed" : "pending"}">
+            ${r.status === true ? "Success" : r.status === false ? "Failed" : "Pending"}
+          </span>
+        </td>
+      `;
+    }
+
+    row += "</tr>";
+
+    tableDataContent.push(row);
   }
 
   tableDataEl.innerHTML = tableDataContent.join("\n");
