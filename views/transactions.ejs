@@ -45,15 +45,15 @@
             <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
             <button class="btn btn-primary">🔍 Search</button>
             <button class="btn btn-primary" name="action" value="export">📑 Export</button>
-            <a class="btn btn-primary" href="/transactions">Refresh</a>
+            <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
           </form>
 
           <div style="display: flex; gap: 5px; align-items: center;">
             <span style="margin-right: 10px;">
               <span id="data-from"><%= dataFrom %></span> - <span id="data-to"><%= dataTo %></span> of <span id="total"><%= total %></span>
             </span>
-            <button id="prev-btn" class="btn" onclick="goToPage('prev')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
-            <button id="next-btn" class="btn" onclick="goToPage('next')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
+            <button id="prev-btn" class="btn" onclick="goToPrev()" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
+            <button id="next-btn" class="btn" onclick="goToNext()" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
           </div>
         </div>
 
@@ -96,6 +96,15 @@
     
     <div id="loading-overlay">Loading...</div>
     <script>
+      const formEl = document.querySelector('form');
+
+      formEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(formEl);
+        const params = Object.fromEntries(formData);
+        fetchData(params);
+      });
+
       async function showDetail(id) {
         const dialog = document.querySelector('dialog');
         const detailEl = document.querySelector('#detail');
@@ -112,26 +121,33 @@
         dialog.showModal();
       }
 
-      async function goToPage(route) {
+      function refreshData() {
+        fetchData({ page: 1, keyword: '', from: '', to: ''})
+      }
+
+      function goToNext() {
+        const params = new URLSearchParams(window.location.search);
+        let page = params.get('page') || 1;
+        if (isNaN(+page)) page = 1;
+        fetchData({ page: Number(page) + 1})
+      }
+
+      function goToPrev() {
+        const params = new URLSearchParams(window.location.search);
+        let page = params.get('page') || 1;
+        if (isNaN(+page)) page = 1;
+        fetchData({ page: Number(page) - 1})
+      }
+
+      async function fetchData(detaultParams = {}) {
+        // block ui
         const loadingEl = document.querySelector('#loading-overlay');
         loadingEl.style.display = 'flex';
 
+        // get params from url
         const params = new URLSearchParams(window.location.search);
-        const page = params.get('page') || 1;
-        const pageSize = params.get('pageSize') || 100;
-        const keyword = params.get('keyword') || '';
-        const from = params.get('from') || '';
-        const to = params.get('to') || '';
-
-        const queryString = new URLSearchParams({
-          page: route == 'next' ? Number(page) + 1 : Number(page) - 1,
-          pageSize,
-          keyword,
-          from,
-          to
-        }).toString()
-
-        
+        const paramsObj = Object.fromEntries(params);
+        const queryString = new URLSearchParams({...paramsObj, ...detaultParams}).toString()
         const url = `/transactions?${queryString}`;
 
         const response = await fetch(url, {

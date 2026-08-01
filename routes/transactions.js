@@ -33,6 +33,14 @@ router.get("/transactions", async (req, res) => {
     params.push(from, to);
   }
 
+  if (params.length == 2) {
+    where = where.replace("X", "1").replace("Y", "2");
+  }
+
+  if (params.length == 3) {
+    where = where.replace("X", "2").replace("Y", "3");
+  }
+
   query += where;
   query += " ORDER BY event_time DESC";
 
@@ -48,14 +56,6 @@ router.get("/transactions", async (req, res) => {
   const skip = (page - 1) * pageSize;
   query += ` OFFSET ${skip}`;
 
-  if (params.length == 2) {
-    query = query.replace("X", "1").replace("Y", "2");
-  }
-
-  if (params.length == 3) {
-    query = query.replace("X", "2").replace("Y", "3");
-  }
-
   // default value for pagination
   let total = 0;
   let dataFrom = 0;
@@ -68,6 +68,7 @@ router.get("/transactions", async (req, res) => {
 
     const { rows: rowsCount } = await pool.query(
       `SELECT COUNT(id) FROM "acc_transaction" ${where}`,
+      params,
     );
 
     total = rowsCount[0].count;
