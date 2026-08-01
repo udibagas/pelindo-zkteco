@@ -35,7 +35,7 @@
           <div class="error"><%= err.message %></div>
         <% } %>
 
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
           <form style="display: flex; gap: 10px; align-items: center;">
             <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
             <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
@@ -45,15 +45,15 @@
             <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
             <button class="btn btn-primary">🔍 Search</button>
             <button class="btn btn-primary" name="action" value="export">📑 Export</button>
-            <a class="btn btn-primary" href="/logs">Refresh</a>
+            <a class="btn btn-primary" href="/transactions">Refresh</a>
           </form>
 
           <div style="display: flex; gap: 5px; align-items: center;">
             <span style="margin-right: 10px;">
               <%= dataFrom %> - <%= dataTo %> of <%= total %>
             </span>
-            <button class="btn" onclick="goToPage('<%= prevPage %>')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
-            <button class="btn" onclick="goToPage('<%= nextPage %>')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
+            <button id="prev-btn" class="btn" onclick="goToPage('prev')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
+            <button id="next-btn" class="btn" onclick="goToPage('next')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
           </div>
         </div>
 
@@ -67,7 +67,7 @@
                 <th>Driver ID</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="table-data">
               <% rows.forEach(r => { %>
                 <tr onclick="showDetail('<%= r.id %>')">
                   <td><%= r.event_time.toLocaleString('id-ID') %></td>
@@ -100,28 +100,76 @@
         const detailEl = document.querySelector('#detail');
         if (!detailEl) return;
 
-        const res = await fetch(`/transactions/${id}`);
+        const res = await fetch(`/transactions/${id}`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
         const data = await res.json();
         detailEl.innerHTML = JSON.stringify(data, null, 2);
         dialog.showModal();
       }
 
-      function goToPage(page) {
+      async function goToPage(route) {
         const params = new URLSearchParams(window.location.search);
+        const page = params.get('page') || 1;
         const pageSize = params.get('pageSize') || 100;
         const keyword = params.get('keyword') || '';
         const from = params.get('from') || '';
         const to = params.get('to') || '';
 
         const queryString = new URLSearchParams({
-          page,
+          page: route == 'next' ? Number(page) + 1 : Number(page) - 1,
           pageSize,
           keyword,
           from,
           to
         }).toString()
 
-        window.location.href = `/transactions?${queryString}`;
+        
+        const url = `/transactions?${queryString}`;
+
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (response.status == 200) {
+          const { rows, nextPage, prevPage, total, dataFrom, dataTo  } = await response.json();
+          const tableDataEl = document.querySelector('#table-data');
+          const tableDataContent = [];
+
+          for (const r of rows) {
+            tableDataContent.push(`
+              <tr onclick="showDetail('${r.id}')">
+                <td>${r.event_time.toLocaleString('id-ID')}</td>
+                <td>${r.dev_alias}</td>
+                <td>${r.name}</td>
+                <td>${r.pin}</td>
+              </tr>
+            `)
+          }
+
+          const prevBtn = document.querySelector('#prev-btn');
+          const nextBtn = document.querySelector('#next-btn');
+
+          if (!nextPage) {
+            nextBtn.setAttribute('disabled', '');
+          } else {
+            nextBtn.removeAttribute('disabled')
+          }
+
+          if (!prevPage) {
+            prevBtn.setAttribute('disabled', '');
+          } else {
+            prevBtn.removeAttribute('disabled')
+          }
+
+          tableDataEl.innerHTML = tableDataContent.join("\n");
+          history.pushState(null, '', url);
+        }
       }
     </script>
   </body>

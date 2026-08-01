@@ -103,7 +103,7 @@ router.get("/transactions", async (req, res) => {
       return res.end();
     }
 
-    res.render("transactions", {
+    const responseData = {
       err: null,
       rows,
       from,
@@ -116,9 +116,15 @@ router.get("/transactions", async (req, res) => {
       dataTo,
       prevPage,
       nextPage,
-    });
+    };
+
+    if (req.get("Content-Type") == "application/json") {
+      return res.json(responseData);
+    }
+
+    res.render("transactions", responseData);
   } catch (err) {
-    return res.render("transactions", {
+    const responseData = {
       err,
       rows: [],
       from,
@@ -131,7 +137,13 @@ router.get("/transactions", async (req, res) => {
       dataTo,
       prevPage,
       nextPage,
-    });
+    };
+
+    if (req.get("Content-Type") == "application/json") {
+      return res.json(responseData);
+    }
+
+    return res.render("transactions", responseData);
   }
 });
 
