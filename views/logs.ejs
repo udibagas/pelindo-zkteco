@@ -52,29 +52,27 @@
 
     <div class="container-fluid">
         <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
-          <% if (err) { %>
-           <div class="error"><%= err.message %></div>
+          <% if (error) { %>
+           <div class="error"><%= error.message %></div>
           <% } %>
 
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <form style="display: flex; gap: 10px; align-items: center;">
               <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
               <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
-              <div>
-                -
-              </div>
+              <div> - </div>
               <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
               <button class="btn btn-primary">🔍 Search</button>
-              <button class="btn btn-primary" name="action" value="export">📑 Export</button>
-              <a class="btn btn-primary" href="/logs">Refresh</a>
+              <button class="btn btn-primary" type="button" id="btn-export">📑 Export</button>
+              <button class="btn btn-primary" type="reset" onclick="refreshData()">Refresh</button>
             </form>
 
             <div style="display: flex; gap: 5px; align-items: center;">
               <span style="margin-right: 10px;">
-                <%= dataFrom %> - <%= dataTo %> of <%= total %>
+                <span id="data-from"><%= dataFrom %></span> - <span id="data-to"><%= dataTo %></span> of <span id="total"><%= total %></span>
               </span>
-              <button class="btn" onclick="goToPage('<%= prevPage %>')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
-              <button class="btn" onclick="goToPage('<%= nextPage %>')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
+              <button id="prev-btn" class="btn" onclick="goToPrev()" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
+              <button id="next-btn" class="btn" onclick="goToNext()" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
             </div>
           </div>
 
@@ -91,16 +89,16 @@
                   <th style="text-align: center;">API Response Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="table-data">
                 <% rows.forEach(r => { %>
                   <tr onclick="showDetail('<%= r.id %>')">
-                    <td><%= r.time.toLocaleString('id-ID') %></td>
-                    <td><%= r.device_id %></td>
-                    <td><%= r.driver_name %></td>
-                    <td><%= r.driver_id %></td>
+                    <td><%= r.Time.toLocaleString('id-ID') %></td>
+                    <td><%= r.Gate %></td>
+                    <td><%= r["Driver Name"] %></td>
+                    <td><%= r["Driver ID"] %></td>
                     <td style="text-align: center;">
-                      <span class="status <%= r.response_status === true ? 'success' : r.response_status === false ? 'failed' : 'pending' %>">
-                        <%= r.response_status === true ? 'Success' : r.response_status === false ? 'Failed' : 'Pending' %>
+                      <span class="status <%= r.status === true ? 'success' : r.status === false ? 'failed' : 'pending' %>">
+                        <%= r.status === true ? 'Success' : r.status === false ? 'Failed' : 'Pending' %>
                       </span>
                     </td>
                   </tr>
@@ -171,7 +169,26 @@
         
     </div>
 
+    <div id="loading-overlay">Loading...</div>
+
+    <script src="/script.js"></script>
+
     <script>
+      path = 'logs';
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        page = 1;
+        fetchData();
+      });
+
+      // handle export button
+      const exportBtn = document.querySelector('#btn-export');
+      exportBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        exportToExcel();
+      });
+
       async function showDetail(id) {
         try {
           const res = await fetch(`/logs/${id}`)
@@ -212,23 +229,66 @@
         }
       }
 
-      function goToPage(page) {
-        const params = new URLSearchParams(window.location.search);
-        const pageSize = params.get('pageSize') || 100;
-        const keyword = params.get('keyword') || '';
-        const from = params.get('from') || '';
-        const to = params.get('to') || '';
+    </script>
 
-        const queryString = new URLSearchParams({
-          page,
-          pageSize,
-          keyword,
-          from,
-          to
-        }).toString()
+    <script>
+      // async function showDetail(id) {
+      //   try {
+      //     const res = await fetch(`/logs/${id}`)
+      //     const data = await res.json();
 
-        window.location.href = `/logs?${queryString}`;
-      }
+      //     if (res.status == 404) {
+      //       throw new Error("Log not found")
+      //     }
+
+      //     if (res.status == 500) {
+      //       throw new Error("Internal server error")
+      //     }
+
+      //     if (res.status == 200) {
+      //       const logIdEl = document.querySelector('#log_id');
+      //       const timeEl = document.querySelector('#time');
+      //       const driverIdEl = document.querySelector('#driver_id');
+      //       const driverNameEl = document.querySelector('#driver_name');
+      //       const apiResponseEl = document.querySelector('#api_response');
+      //       const responseStatusEl = document.querySelector('#response_status');
+      //       const rawLogEl = document.querySelector('#raw_log');
+      //       const apiPayloadEl = document.querySelector('#api_payload');
+
+      //       logIdEl.innerHTML = data.log_id;
+      //       timeEl.innerHTML = data.time;
+      //       driverIdEl.innerHTML = data.driver_id;
+      //       driverNameEl.innerHTML = data.driver_name;
+      //       apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
+      //       responseStatusEl.innerHTML = data.response_status;
+      //       rawLogEl.innerHTML = JSON.stringify(data.raw_log, null, 2);
+      //       apiPayloadEl.innerHTML = JSON.stringify(data.api_payload, null, 2);
+
+      //       const dialog = document.querySelector('dialog');
+      //       dialog.showModal();
+      //     }
+      //   } catch (error) {
+      //     console.error(error.message)
+      //   }
+      // }
+
+      // function goToPage(page) {
+      //   const params = new URLSearchParams(window.location.search);
+      //   const pageSize = params.get('pageSize') || 100;
+      //   const keyword = params.get('keyword') || '';
+      //   const from = params.get('from') || '';
+      //   const to = params.get('to') || '';
+
+      //   const queryString = new URLSearchParams({
+      //     page,
+      //     pageSize,
+      //     keyword,
+      //     from,
+      //     to
+      //   }).toString()
+
+      //   window.location.href = `/logs?${queryString}`;
+      // }
     </script>
   </body>
 </html>

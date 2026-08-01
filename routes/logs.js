@@ -16,7 +16,16 @@ router.get("/logs", async (req, res) => {
     pageSize = defaultPageSize,
   } = req.query;
 
-  let query = `SELECT id, time, device_id, driver_name, driver_id, response_status FROM "api_logs"`;
+  let query = `
+    SELECT
+      id,
+      time AS "Time",
+      device_id  AS "Gate",
+      driver_name AS "Driver Name",
+      driver_id AS "Driver ID",
+      response_status AS status
+    FROM "api_logs"
+  `;
   let where = " WHERE 1 = 1";
   const params = [];
 
@@ -68,6 +77,7 @@ router.get("/logs", async (req, res) => {
 
     const { rows: rowsCount } = await pool.query(
       `SELECT COUNT(id) FROM "api_logs" ${where}`,
+      params,
     );
 
     total = rowsCount[0].count;
@@ -100,8 +110,8 @@ router.get("/logs", async (req, res) => {
       return res.end();
     }
 
-    res.render("logs", {
-      err: null,
+    const responseData = {
+      error: null,
       rows,
       from,
       to,
@@ -113,10 +123,16 @@ router.get("/logs", async (req, res) => {
       dataTo,
       prevPage,
       nextPage,
-    });
+    };
+
+    if (req.get("Content-Type") == "application/json") {
+      return res.json(responseData);
+    }
+
+    res.render("logs", responseData);
   } catch (err) {
-    res.render("logs", {
-      err,
+    const responseData = {
+      error,
       rows: [],
       from,
       to,
@@ -128,7 +144,13 @@ router.get("/logs", async (req, res) => {
       dataTo,
       prevPage,
       nextPage,
-    });
+    };
+
+    if (req.get("Content-Type") == "application/json") {
+      return res.json(responseData);
+    }
+
+    res.render("logs");
   }
 });
 

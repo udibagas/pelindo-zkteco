@@ -39,9 +39,7 @@
           <form style="display: flex; gap: 10px; align-items: center;">
             <input type="text" name="keyword" placeholder="Search" value="<%= keyword %>"  />
             <input type="date" name="from" value="<%= from?.split(' ')[0] %>" />
-            <div>
-              -
-            </div>
+            <div> - </div>
             <input type="date" name="to" value="<%= to?.split(' ')[0] %>" />
             <button class="btn btn-primary">🔍 Search</button>
             <button class="btn btn-primary" type="button" id="btn-export">📑 Export</button>
@@ -70,10 +68,10 @@
             <tbody id="table-data">
               <% rows.forEach(r => { %>
                 <tr onclick="showDetail('<%= r.id %>')">
-                  <td><%= r.event_time.toLocaleString('id-ID') %></td>
-                  <td><%= r.dev_alias %></td>
-                  <td><%= r.name %></td>
-                  <td><%= r.pin %></td>
+                  <td><%= r.Time.toLocaleString('id-ID') %></td>
+                  <td><%= r.Gate %></td>
+                  <td><%= r["Driver Name"] %></td>
+                  <td><%= r["Driver ID"] %></td>
                 </tr>
               <% }) %>
               

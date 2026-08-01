@@ -16,7 +16,15 @@ router.get("/transactions", async (req, res) => {
     pageSize = defaultPageSize,
   } = req.query;
 
-  let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction"`;
+  let query = `
+    SELECT
+      id,
+      event_time AS "Time",
+      dev_alias AS "Gate",
+      name AS "Driver Name",
+      pin AS "Driver ID"
+    FROM "acc_transaction"
+  `;
   let where = " WHERE dev_alias ILIKE '%kiosk%'";
   const params = [];
 

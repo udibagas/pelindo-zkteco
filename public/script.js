@@ -1,3 +1,4 @@
+let path = "transactions";
 const form = document.querySelector("form");
 const tableDataEl = document.querySelector("#table-data");
 const loadingEl = document.querySelector("#loading-overlay");
@@ -32,7 +33,7 @@ function goToPrev() {
 async function fetchData() {
   const params = getFormData();
   const queryString = new URLSearchParams({ ...params, page }).toString();
-  const url = `/transactions?${queryString}`;
+  const url = `/${path}?${queryString}`;
 
   setLoading(true);
 
@@ -69,7 +70,7 @@ function exportToExcel() {
     ...params,
     action: "export",
   }).toString();
-  const url = `${window.location.origin}/transactions?${queryString}`;
+  const url = `${window.location.origin}/${path}?${queryString}`;
   window.open(url, "_blank");
 }
 
@@ -79,10 +80,10 @@ function renderTableData(rows) {
   for (const r of rows) {
     tableDataContent.push(`
       <tr onclick="showDetail('${r.id}')">
-        <td>${new Date(r.event_time).toLocaleString()}</td>
-        <td>${r.dev_alias}</td>
-        <td>${r.name}</td>
-        <td>${r.pin}</td>
+        <td>${new Date(r.Time).toLocaleString()}</td>
+        <td>${r.Gate}</td>
+        <td>${r["Driver Name"]}</td>
+        <td>${r["Driver ID"]}</td>
       </tr>
     `);
   }
@@ -95,7 +96,7 @@ async function showDetail(id) {
   const detailEl = document.querySelector("#detail");
   if (!detailEl) return;
 
-  const res = await fetch(`/transactions/${id}`, {
+  const res = await fetch(`/${path}/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
