@@ -50,7 +50,7 @@
 
           <div style="display: flex; gap: 5px; align-items: center;">
             <span style="margin-right: 10px;">
-              <%= dataFrom %> - <%= dataTo %> of <%= total %>
+              <span id="data-from"><%= dataFrom %></span> - <span id="data-to"><%= dataTo %></span> of <span id="total"><%= total %></span>
             </span>
             <button id="prev-btn" class="btn" onclick="goToPage('prev')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
             <button id="next-btn" class="btn" onclick="goToPage('next')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
@@ -142,6 +142,8 @@
 
         if (response.status == 200) {
           const { rows, nextPage, prevPage, total, dataFrom, dataTo  } = await response.json();
+          
+          // update table data
           const tableDataEl = document.querySelector('#table-data');
           const tableDataContent = [];
 
@@ -156,6 +158,18 @@
             `)
           }
 
+          tableDataEl.innerHTML = tableDataContent.join("\n");
+
+          // Update count
+          const dataFromEl = document.querySelector('#data-from');
+          const dataToEl = document.querySelector('#data-to');
+          const totalEl = document.querySelector('#total');
+
+          dataFromEl.innerHTML = dataFrom;
+          dataToEl.innerHTML = dataTo;
+          totalEl.innerHTML = total;
+
+          // Update button state
           const prevBtn = document.querySelector('#prev-btn');
           const nextBtn = document.querySelector('#next-btn');
 
@@ -171,7 +185,6 @@
             prevBtn.removeAttribute('disabled')
           }
 
-          tableDataEl.innerHTML = tableDataContent.join("\n");
           history.pushState(null, '', url);
         }
 
