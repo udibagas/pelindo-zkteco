@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Logs</title>
+    <title>Transaction Logs</title>
     <link rel="stylesheet" href="/style.css" />
 
     <style>
@@ -48,9 +48,12 @@
             <a class="btn btn-primary" href="/logs">Refresh</a>
           </form>
 
-          <div style="display: flex; gap: 5px">
-            <a class="btn" href="?page=1">&laquo; Prev</a>
-            <a class="btn" href="?page=2">Next &raquo;</a>
+          <div style="display: flex; gap: 5px; align-items: center;">
+            <span style="margin-right: 10px;">
+              <%= dataFrom %> - <%= dataTo %> of <%= total %>
+            </span>
+            <button class="btn" onclick="goToPage('<%= prevPage %>')" <%= !prevPage ? 'disabled' : '' %>>&laquo; Prev</button>
+            <button class="btn" onclick="goToPage('<%= nextPage %>')" <%= !nextPage ? 'disabled' : '' %>>Next &raquo;</button>
           </div>
         </div>
 
@@ -101,6 +104,24 @@
         const data = await res.json();
         detailEl.innerHTML = JSON.stringify(data, null, 2);
         dialog.showModal();
+      }
+
+      function goToPage(page) {
+        const params = new URLSearchParams(window.location.search);
+        const pageSize = params.get('pageSize') || 100;
+        const keyword = params.get('keyword') || '';
+        const from = params.get('from') || '';
+        const to = params.get('to') || '';
+
+        const queryString = new URLSearchParams({
+          page,
+          pageSize,
+          keyword,
+          from,
+          to
+        }).toString()
+
+        window.location.href = `/transactions?${queryString}`;
       }
     </script>
   </body>

@@ -44,7 +44,7 @@ router.get("/transactions", async (req, res) => {
 
   query += ` LIMIT ${pageSize}`;
 
-  page = isNaN(Number(page)) ? 1 : Number(page);
+  page = isNaN(Number(page)) || page < 1 ? 1 : Number(page);
   const skip = (page - 1) * pageSize;
   query += ` OFFSET ${skip}`;
 
@@ -56,8 +56,27 @@ router.get("/transactions", async (req, res) => {
     query = query.replace("X", "2").replace("Y", "3");
   }
 
+  // default value for pagination
+  let total = 0;
+  let dataFrom = 0;
+  let dataTo = page * pageSize;
+  let prevPage = page - 1;
+  let nextPage = page + 1;
+
   try {
     const { rows } = await pool.query(query, params);
+
+    const { rows: rowsCount } = await pool.query(
+      `SELECT COUNT(id) FROM "acc_transaction" ${where}`,
+    );
+
+    total = rowsCount[0].count;
+    dataFrom = (page - 1) * pageSize + 1;
+
+    if (page * pageSize > total) {
+      dataTo = total;
+      nextPage = 0;
+    }
 
     const workbook = exportExcel(
       rows.map((r) => ({
@@ -92,6 +111,11 @@ router.get("/transactions", async (req, res) => {
       keyword,
       page,
       pageSize,
+      total,
+      dataFrom,
+      dataTo,
+      prevPage,
+      nextPage,
     });
   } catch (err) {
     return res.render("transactions", {
@@ -102,6 +126,11 @@ router.get("/transactions", async (req, res) => {
       keyword,
       page,
       pageSize,
+      total,
+      dataFrom,
+      dataTo,
+      prevPage,
+      nextPage,
     });
   }
 });

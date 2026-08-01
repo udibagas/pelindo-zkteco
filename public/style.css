@@ -186,6 +186,7 @@ a.btn {
   padding-right: 15px;
   color: #555;
   background-color: white;
+  cursor: pointer;
 }
 
 button.btn-primary,
@@ -198,4 +199,8 @@ a.btn.btn-primary {
   width: 35px;
   border-radius: 50%;
   padding: 0;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
 }
