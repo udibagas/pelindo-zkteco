@@ -4,7 +4,17 @@ const exportExcel = require("../utils/excel");
 const router = new Router();
 
 router.get("/transactions", async (req, res) => {
-  let { keyword, from, to, action, page = 1, pageSize = 100 } = req.query;
+  const defaultPageSize = 100;
+  const maxPageSize = 1000;
+
+  let {
+    keyword,
+    from,
+    to,
+    action,
+    page = 1,
+    pageSize = defaultPageSize,
+  } = req.query;
 
   let query = `SELECT id, event_time, dev_alias, name, pin FROM "acc_transaction"`;
   let where = " WHERE dev_alias ILIKE '%kiosk%'";
@@ -27,8 +37,13 @@ router.get("/transactions", async (req, res) => {
   query += " ORDER BY event_time DESC";
 
   // pagination
-  pageSize = isNaN(Number(pageSize)) || pageSize > 100 ? 100 : Number(pageSize);
+  pageSize =
+    isNaN(Number(pageSize)) || pageSize > maxPageSize
+      ? defaultPageSize
+      : Number(pageSize);
+
   query += ` LIMIT ${pageSize}`;
+
   page = isNaN(Number(page)) ? 1 : Number(page);
   const skip = (page - 1) * pageSize;
   query += ` OFFSET ${skip}`;
