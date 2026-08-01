@@ -91,11 +91,16 @@ router.get("/logs", async (req, res) => {
     if (action == "export") {
       const workbook = exportExcel(
         rows.map((r) => ({
-          time: r.time.toLocaleString("id-ID"),
-          gate: r.device_id,
-          driver_name: r.driver_name,
-          driver_id: r.driver_id,
-          status: r.response_status,
+          Time: r.Time.toLocaleString("id-ID"),
+          Gate: r.Gate,
+          "Driver Name": r["Driver Name"],
+          "Driver ID": r["Driver ID"],
+          status:
+            r.status === true
+              ? "Success"
+              : r.status === false
+                ? "Failed"
+                : "Pending",
         })),
       );
 
@@ -105,7 +110,6 @@ router.get("/logs", async (req, res) => {
       );
 
       res.setHeader("Content-Disposition", "attachment; filename=logs.xlsx");
-
       await workbook.xlsx.write(res);
       return res.end();
     }
@@ -130,7 +134,7 @@ router.get("/logs", async (req, res) => {
     }
 
     res.render("logs", responseData);
-  } catch (err) {
+  } catch (error) {
     const responseData = {
       error,
       rows: [],

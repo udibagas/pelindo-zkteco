@@ -7,22 +7,22 @@ function exportExcel(data = [], withStatus = true) {
   const columns = [
     {
       header: "Time In",
-      key: "time",
+      key: "Time",
       width: 30,
     },
     {
       header: "Gate",
-      key: "gate",
+      key: "Gate",
       width: 30,
     },
     {
       header: "Driver Name",
-      key: "driver_name",
+      key: "Driver Name",
       width: 30,
     },
     {
       header: "Driver ID",
-      key: "driver_id",
+      key: "Driver ID",
       width: 30,
     },
   ];

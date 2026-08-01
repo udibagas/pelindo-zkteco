@@ -96,10 +96,10 @@ router.get("/transactions", async (req, res) => {
     if (action == "export") {
       const workbook = exportExcel(
         rows.map((r) => ({
-          time: r.event_time,
-          gate: r.dev_alias,
-          driver_name: r.name,
-          driver_id: r.pin,
+          Time: r.Time.toLocaleString("id-ID"),
+          Gate: r.Gate,
+          "Driver Name": r["Driver Name"],
+          "Driver ID": r["Driver ID"],
         })),
         false,
       );
