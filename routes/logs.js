@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { pool } = require("../config/db");
 const exportExcel = require("../utils/excel");
+const { getCurrenDate } = require("../utils/date");
 const router = new Router();
 
 router.get("/logs", async (req, res) => {
@@ -35,15 +36,9 @@ router.get("/logs", async (req, res) => {
     params.push(`%${keyword}%`);
   }
 
-  // Default from & to to current date
-  if (!from) {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const date = now.getDate().toString().padStart(2, "0");
-    const currentDate = [year, month, date].join("-");
-    from = currentDate;
-    to = currentDate;
+  if (!from || !to) {
+    const currentDate = getCurrenDate();
+    from = to = currentDate;
   }
 
   if (from && to) {
