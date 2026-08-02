@@ -143,3 +143,66 @@ function updatePaginationLinkState(nextPage, prevPage) {
 function setLoading(show) {
   loadingEl.style.display = show ? "flex" : "none";
 }
+
+function renderLog(log) {
+  const logContainer = document.querySelector("#log-container");
+  const date = new Date(log.timestamp).toLocaleString("id-ID", {
+    timeZone: "Asia/Jakarta",
+  });
+
+  logContainer.innerHTML += `
+    <p>
+      [${date}] [${log.level.toUpperCase()}] ${log.message}
+    </p>
+  `;
+
+  logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+// WebSocket connection for live update
+const host = window.location.host.split(":")[0];
+const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+const wsUrl = `${protocol}//${host}:8090`;
+const socket = new WebSocket(wsUrl);
+
+socket.onmessage = (event) => {
+  const log = JSON.parse(event.data);
+
+  if (log.message.includes("New notification")) {
+    const prefixLength = "New notification: ".length;
+    let data = log.message.slice(prefixLength);
+    data = JSON.parse(data);
+    const userInfo = document.querySelector(`#userinfo${data.dev_id}`);
+
+    if (userInfo) {
+      if (data.name) {
+        userInfo.innerHTML = data.name;
+        userInfo.style.backgroundColor = "green";
+      } else {
+        userInfo.innerHTML = "Unregistered";
+        userInfo.style.backgroundColor = "orange";
+      }
+
+      setTimeout(() => {
+        userInfo.innerHTML = "No face detected";
+        userInfo.style.backgroundColor = "red";
+      }, 10000);
+    }
+
+    fetchData();
+  }
+
+  renderLog(log);
+};
+
+socket.onopen = () => {
+  console.log("WebSocket connection established!!!");
+};
+
+socket.onclose = () => {
+  console.log("WebSocket connection closed!!!");
+};
+
+socket.onerror = (error) => {
+  console.error("WebSocket error:", error.message);
+};
