@@ -1,0 +1,1 @@
+CREATE INDEX idx_time ON api_logs (time);
