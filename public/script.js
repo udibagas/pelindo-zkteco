@@ -80,7 +80,7 @@ function renderTableData(rows) {
   for (const r of rows) {
     let row = `
       <tr onclick="showDetail('${r.id}')">
-        <td>${new Date(r.Time).toLocaleString()}</td>
+        <td>${new Date(r.Time).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}</td>
         <td>${r.Gate}</td>
         <td>${r["Driver Name"]}</td>
         <td>${r["Driver ID"]}</td>
