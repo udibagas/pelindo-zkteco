@@ -38,6 +38,7 @@ async function moveFile(localFilePath, remoteFilePath) {
 
 async function getImage(filename) {
   try {
+    const client = new Client();
     await client.access(ftpConfig);
 
     // Download to buffer
@@ -58,6 +59,7 @@ async function getImage(filename) {
     const mimeType = getMimeType(ext);
     return `data:${mimeType};base64,${base64Data}`;
   } catch (err) {
+    console.error(err.message);
     return "/avatar.png";
   }
 }
