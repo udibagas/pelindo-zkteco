@@ -1,5 +1,6 @@
 const { Client } = require("basic-ftp");
 const { unlink, write } = require("fs");
+const stream = require("stream");
 
 const ftpConfig = {
   host: process.env.FTP_HOST,
