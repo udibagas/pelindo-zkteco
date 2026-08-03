@@ -76,8 +76,6 @@
             </div>
           </div>
 
-          
-
           <div style="max-height: calc(100vh - 160px); overflow-y: auto;">
             <table class="striped-table">
               <thead>
@@ -118,11 +116,17 @@
           <table class="striped-table">
             <thead>
               <tr>
-                <th style="width: 200px">Parameter</th>
+                <th></th>
+                <th>Parameter</th>
                 <th>Value</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td rowspan="6">
+                  <img id="snapshot" src="" alt="" style="width: 200px; height: 200px;">
+                </td>
+              </tr>
               <tr>
                 <td style="font-weight: bold;">Log ID</td>
                 <td id="log_id"></td>
@@ -144,32 +148,36 @@
                 <td id="response_status"></td>
               </tr>
               <tr>
-                <td style="font-weight: bold;">API Response</td>
-                <td>
+                <td colspan="3">
+                  <div style="font-weight: bold;margin-bottom: 8px;">
+                    API Response:
+                  </div>
                   <pre id="api_response"></pre>
                 </td>
               </tr>
               <tr>
-                <td style="font-weight: bold;">Raw Log</td>
-                <td>
-                  <pre id="raw_log"></pre>
+                <td colspan="3">
+                  <div style="font-weight: bold;margin-bottom: 8px;">
+                    API Payload:
+                  </div>
+                  <pre id="api_payload"></pre>
                 </td>
               </tr>
               <tr>
-                <td style="font-weight: bold;">API Payload</td>
-                <td>
-                  <pre id="api_payload"></pre>
+                <td  colspan="3">
+                  <div style="font-weight: bold;margin-bottom: 8px;">
+                    Raw Log:
+                  </div>
+                  <pre id="raw_log"></pre>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </dialog>
-
-        
     </div>
 
-    <div id="loading-overlay">Loading...</div>
+    <%- include('_loading') %>
 
     <script src="/script.js"></script>
 
@@ -205,6 +213,7 @@
           if (res.status == 200) {
             const logIdEl = document.querySelector('#log_id');
             const timeEl = document.querySelector('#time');
+            const snapshotEl = document.querySelector('#snapshot');
             const driverIdEl = document.querySelector('#driver_id');
             const driverNameEl = document.querySelector('#driver_name');
             const apiResponseEl = document.querySelector('#api_response');
@@ -213,7 +222,8 @@
             const apiPayloadEl = document.querySelector('#api_payload');
 
             logIdEl.innerHTML = data.log_id;
-            timeEl.innerHTML = data.time;
+            timeEl.innerHTML = data.time.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta'});
+            snapshotEl.setAttribute('src', data.api_payload.photopath)
             driverIdEl.innerHTML = data.driver_id;
             driverNameEl.innerHTML = data.driver_name;
             apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
@@ -228,67 +238,6 @@
           console.error(error.message)
         }
       }
-
-    </script>
-
-    <script>
-      // async function showDetail(id) {
-      //   try {
-      //     const res = await fetch(`/logs/${id}`)
-      //     const data = await res.json();
-
-      //     if (res.status == 404) {
-      //       throw new Error("Log not found")
-      //     }
-
-      //     if (res.status == 500) {
-      //       throw new Error("Internal server error")
-      //     }
-
-      //     if (res.status == 200) {
-      //       const logIdEl = document.querySelector('#log_id');
-      //       const timeEl = document.querySelector('#time');
-      //       const driverIdEl = document.querySelector('#driver_id');
-      //       const driverNameEl = document.querySelector('#driver_name');
-      //       const apiResponseEl = document.querySelector('#api_response');
-      //       const responseStatusEl = document.querySelector('#response_status');
-      //       const rawLogEl = document.querySelector('#raw_log');
-      //       const apiPayloadEl = document.querySelector('#api_payload');
-
-      //       logIdEl.innerHTML = data.log_id;
-      //       timeEl.innerHTML = data.time;
-      //       driverIdEl.innerHTML = data.driver_id;
-      //       driverNameEl.innerHTML = data.driver_name;
-      //       apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
-      //       responseStatusEl.innerHTML = data.response_status;
-      //       rawLogEl.innerHTML = JSON.stringify(data.raw_log, null, 2);
-      //       apiPayloadEl.innerHTML = JSON.stringify(data.api_payload, null, 2);
-
-      //       const dialog = document.querySelector('dialog');
-      //       dialog.showModal();
-      //     }
-      //   } catch (error) {
-      //     console.error(error.message)
-      //   }
-      // }
-
-      // function goToPage(page) {
-      //   const params = new URLSearchParams(window.location.search);
-      //   const pageSize = params.get('pageSize') || 100;
-      //   const keyword = params.get('keyword') || '';
-      //   const from = params.get('from') || '';
-      //   const to = params.get('to') || '';
-
-      //   const queryString = new URLSearchParams({
-      //     page,
-      //     pageSize,
-      //     keyword,
-      //     from,
-      //     to
-      //   }).toString()
-
-      //   window.location.href = `/logs?${queryString}`;
-      // }
     </script>
   </body>
 </html>

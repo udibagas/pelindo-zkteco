@@ -35,4 +35,6 @@ async function moveFile(localFilePath, remoteFilePath) {
   }
 }
 
+async function getImage(path) {}
+
 module.exports = moveFile;
