@@ -166,15 +166,17 @@ const wsUrl = `${protocol}//${host}:8090`;
 const socket = new WebSocket(wsUrl);
 
 socket.onmessage = (event) => {
+  const { pathname } = window.location;
   const log = JSON.parse(event.data);
+  let timeOutId = null;
 
-  if (log.message.includes("New notification")) {
-    const prefixLength = "New notification: ".length;
+  if (log.message.includes("New data")) {
+    const prefixLength = "New data: ".length;
     let data = log.message.slice(prefixLength);
     data = JSON.parse(data);
     const userInfo = document.querySelector(`#userinfo${data.dev_id}`);
 
-    if (userInfo) {
+    if (pathname == "/" && userInfo) {
       if (data.name) {
         userInfo.innerHTML = data.name;
         userInfo.style.backgroundColor = "green";
@@ -183,16 +185,24 @@ socket.onmessage = (event) => {
         userInfo.style.backgroundColor = "orange";
       }
 
-      setTimeout(() => {
+      if (timeOutId) {
+        window.clearTimeout(timeOutId);
+      }
+
+      timeOutId = setTimeout(() => {
         userInfo.innerHTML = "No face detected";
         userInfo.style.backgroundColor = "red";
-      }, 10000);
+      }, 10_000);
     }
 
-    fetchData();
-  }
+    if (["/logs", "/transactions"].includes(pathname)) {
+      fetchData();
+    }
 
-  renderLog(log);
+    if (pathname == "/") {
+      renderLog(log);
+    }
+  }
 };
 
 socket.onopen = () => {

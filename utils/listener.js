@@ -15,6 +15,8 @@ async function processNotification(msg, pool) {
     return "Device not a kiosk, skipping...";
   }
 
+  logger.info(`New data: ${JSON.stringify(data)}`);
+
   if (
     data.pin === lastData.pin &&
     data.name === lastData.name &&
