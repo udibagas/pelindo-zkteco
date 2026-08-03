@@ -1,5 +1,15 @@
 const { Client } = require("basic-ftp");
-const { unlink } = require("fs");
+const { unlink, write } = require("fs");
+
+const ftpConfig = {
+  host: process.env.FTP_HOST,
+  user: process.env.FTP_USER,
+  password: process.env.FTP_PASS,
+  secure: true,
+  secureOptions: {
+    rejectUnauthorized: false,
+  },
+};
 
 async function moveFile(localFilePath, remoteFilePath) {
   const path = remoteFilePath.split("/").slice(0, -1).join("/");
@@ -9,16 +19,7 @@ async function moveFile(localFilePath, remoteFilePath) {
   client.ftp.verbose = false;
 
   try {
-    await client.access({
-      host: process.env.FTP_HOST,
-      user: process.env.FTP_USER,
-      password: process.env.FTP_PASS,
-      secure: true,
-      secureOptions: {
-        rejectUnauthorized: false,
-      },
-    });
-
+    await client.access(ftpConfig);
     await client.ensureDir(process.env.FTP_DIR + "/" + path);
     await client.uploadFrom(localFilePath, filename);
 
@@ -35,6 +36,30 @@ async function moveFile(localFilePath, remoteFilePath) {
   }
 }
 
-async function getImage(path) {}
+async function getImage(filename) {
+  try {
+    await client.access(ftpConfig);
 
-module.exports = moveFile;
+    // Download to buffer
+    let fileBuffer = Buffer.alloc(0);
+    const writeStream = new stream.Writable({
+      write(chunk, encoding, callback) {
+        fileBuffer = Buffer.concat([fileBuffer, chunk]);
+        callback();
+      },
+    });
+
+    await client.downloadTo(writeStream, process.env.FTP_DIR + "/" + filename);
+    client.close();
+
+    // Convert to Base64
+    const base64Data = fileBuffer.toString("base64");
+    const ext = filename.split(".").pop().toLowerCase();
+    const mimeType = getMimeType(ext);
+    return `data:${mimeType};base64,${base64Data}`;
+  } catch (err) {
+    return "/avatar.png";
+  }
+}
+
+module.exports = { moveFile, getImage };

@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { pool } = require("../config/db");
 const exportExcel = require("../utils/excel");
 const { getCurrenDate } = require("../utils/date");
+const { getImage } = require("../utils/ftp");
 const router = new Router();
 
 router.get("/logs", async (req, res) => {
@@ -171,11 +172,15 @@ router.get("/logs/:id", async (req, res) => {
 
   try {
     const result = await pool.query(query, [id]);
+
     if (result.rowCount == 0) {
       return res.status(404).json({ message: "Log not found" });
     }
 
-    res.json(result.rows[0]);
+    const log = result.rows[0];
+    const { photopath } = log.api_payload;
+    log.snapshotUrl = await getImage(photopath);
+    res.json(log);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

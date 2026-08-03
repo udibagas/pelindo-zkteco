@@ -2,7 +2,7 @@ const axios = require("axios");
 const getSnapshot = require("./snapshot");
 const LogResult = require("../models/logresult");
 const logger = require("../logger");
-const moveFile = require("./ftp");
+const { moveFile } = require("./ftp");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
 const lastData = { pin: "", name: "", dev_id: "" };

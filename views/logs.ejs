@@ -113,66 +113,59 @@
           <button class="btn btn-circle" commandfor="my-dialog" command="close">X</button>
         </div>
         <div class="dialog-body">
-          <table class="striped-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Parameter</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td rowspan="6">
-                  <img id="snapshot" src="" alt="" style="width: 200px; height: 200px;">
-                </td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Log ID</td>
-                <td id="log_id"></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Time In</td>
-                <td id="time"></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Driver Name</td>
-                <td id="driver_name"></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Driver ID</td>
-                <td id="driver_id"></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">API Response Status</td>
-                <td id="response_status"></td>
-              </tr>
-              <tr>
-                <td colspan="3">
-                  <div style="font-weight: bold;margin-bottom: 8px;">
-                    API Response:
-                  </div>
-                  <pre id="api_response"></pre>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="3">
-                  <div style="font-weight: bold;margin-bottom: 8px;">
-                    API Payload:
-                  </div>
-                  <pre id="api_payload"></pre>
-                </td>
-              </tr>
-              <tr>
-                <td  colspan="3">
-                  <div style="font-weight: bold;margin-bottom: 8px;">
-                    Raw Log:
-                  </div>
-                  <pre id="raw_log"></pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+          <div style="display: flex; gap: 15px; align-items: flex-start;">
+            <img 
+              id="snapshot" 
+              src="" 
+              alt="Snapshot" 
+              style="width: 180px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;" 
+            />
+
+            <table class="striped-table">
+              <tbody>
+                <tr>
+                  <td style="font-weight: bold;">Log ID</td>
+                  <td id="log_id"></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold;">Time In</td>
+                  <td id="time"></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold;">Gate</td>
+                  <td id="gate"></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold;">Driver Name</td>
+                  <td id="driver_name"></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold;">Driver ID</td>
+                  <td id="driver_id"></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold;">API Response Status</td>
+                  <td id="response_status"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="font-weight: bold;">
+            API Response:
+          </div>
+          <pre id="api_response"></pre>
+
+          <div style="font-weight: bold;">
+            API Payload:
+          </div>
+          <pre id="api_payload"></pre>
+
+          <div style="font-weight: bold;">
+            Raw Log:
+          </div>
+          <pre id="raw_log"></pre>
         </div>
       </dialog>
     </div>
@@ -213,6 +206,7 @@
           if (res.status == 200) {
             const logIdEl = document.querySelector('#log_id');
             const timeEl = document.querySelector('#time');
+            const gateEl = document.querySelector('#gate');
             const snapshotEl = document.querySelector('#snapshot');
             const driverIdEl = document.querySelector('#driver_id');
             const driverNameEl = document.querySelector('#driver_name');
@@ -222,8 +216,9 @@
             const apiPayloadEl = document.querySelector('#api_payload');
 
             logIdEl.innerHTML = data.log_id;
-            timeEl.innerHTML = data.time.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta'});
-            snapshotEl.setAttribute('src', data.api_payload.photopath)
+            timeEl.innerHTML = data.time;
+            gateEl.innerHTML = data.device_id;
+            snapshotEl.setAttribute('src', data.snapshotUrl)
             driverIdEl.innerHTML = data.driver_id;
             driverNameEl.innerHTML = data.driver_name;
             apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
