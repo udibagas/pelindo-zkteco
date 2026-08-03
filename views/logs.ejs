@@ -189,6 +189,8 @@
       });
 
       async function showDetail(id) {
+        setLoading(true);
+        
         try {
           const res = await fetch(`/logs/${id}`)
           const data = await res.json();
@@ -230,6 +232,8 @@
         } catch (error) {
           console.error(error.message)
         }
+
+        setLoading(false);
       }
     </script>
   </body>
