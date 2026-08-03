@@ -118,7 +118,7 @@
             id="snapshot" 
             src="" 
             alt="Snapshot" 
-            style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;" 
+            style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;transform: scaleX(-1);" 
           />
 
           <table class="striped-table">
@@ -190,7 +190,7 @@
 
       async function showDetail(id) {
         setLoading(true);
-        
+
         try {
           const res = await fetch(`/logs/${id}`)
           const data = await res.json();
