@@ -13,7 +13,18 @@ async function getSnapshot(ip_address, filepath) {
 
     ffmpeg(`rtsp://${ip_address}:8554/stream`)
       .inputOptions(["-rtsp_transport", "tcp"]) // Force TCP transport
-      .outputOptions(["-vframes", "1", "-vcodec", "mjpeg", "-q:v", "2"]) // 1 frame, mjpeg, quality 2
+      .outputOptions([
+        "-vframes",
+        "1",
+        "-vcodec",
+        "mjpeg",
+        "-q:v",
+        "1",
+        "-analyzeduration",
+        "1000000", // Reduce analysis time
+        "-probesize",
+        "1000000", // Reduce probe size
+      ])
       .on("start", (cmd) => logger.info("Taking snapshot..."))
       .on("error", (err) => reject(err))
       .on("end", () => resolve("Snapshot taken"))
