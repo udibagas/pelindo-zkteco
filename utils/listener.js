@@ -5,8 +5,29 @@ const logger = require("../logger");
 const { moveFile } = require("./ftp");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
-const lastData = { pin: "", name: "", dev_id: "" };
-let timeout;
+class LogData {
+  constructor(pin, name, dev_id) {
+    this.pin = pin;
+    this.name = name;
+    this.dev_id = dev_id;
+  }
+}
+
+// last data grouped by dev_id
+// lastData = {
+//   xxx: {
+//     pin: "x",
+//     name: "x",
+//     dev_id: "x",
+//   },
+//   yyy: {
+//     ...
+//   },
+//   ...
+// };
+
+const lastData = {};
+const timeoutIds = {};
 
 async function processNotification(msg, pool) {
   const data = JSON.parse(msg.payload);
@@ -17,29 +38,33 @@ async function processNotification(msg, pool) {
 
   logger.info(`New data: ${JSON.stringify(data)}`);
 
-  if (
-    data.pin === lastData.pin &&
-    data.name === lastData.name &&
-    data.dev_id === lastData.dev_id
-  ) {
-    return "Duplicate notification, skipping...";
+  const { pin, name, dev_id } = data;
+
+  if (!lastData[dev_id]) {
+    lastData[dev_id] = {};
   }
 
-  logger.info(`New notification: ${JSON.stringify(data)}`);
+  if (
+    pin === lastData[dev_id].pin &&
+    name === lastData[dev_id].name &&
+    dev_id === lastData[dev_id].dev_id
+  ) {
+    return "Duplicate data. Skipped.";
+  }
 
-  lastData.pin = data.pin;
-  lastData.name = data.name;
-  lastData.dev_id = data.dev_id;
+  lastData[dev_id].pin = pin;
+  lastData[dev_id].name = name;
+  lastData[dev_id].dev_id = dev_id;
 
-  if (timeout !== undefined) {
-    clearTimeout(timeout);
+  if (timeoutIds[dev_id]) {
+    clearTimeout(timeoutIds[dev_id]);
   }
 
   // reset data after 5 minutes
-  timeout = setTimeout(() => {
-    lastData.pin = "";
-    lastData.name = "";
-    lastData.dev_id = "";
+  timeoutIds[dev_id] = setTimeout(() => {
+    lastData[dev_id].pin = "";
+    lastData[dev_id].name = "";
+    lastData[dev_id].dev_id = "";
   }, 60_000 * 5);
 
   const logResult = LogResult.create(data);
