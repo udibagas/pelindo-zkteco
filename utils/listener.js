@@ -52,10 +52,12 @@ async function processNotification(msg, pool) {
     return "Duplicate data. Skipped.";
   }
 
+  // data baru
   lastData[dev_id].pin = pin;
   lastData[dev_id].name = name;
   lastData[dev_id].dev_id = dev_id;
 
+  // clear timeout kalau ada data yang baru
   if (timeoutIds[dev_id]) {
     clearTimeout(timeoutIds[dev_id]);
   }
