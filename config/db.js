@@ -9,9 +9,12 @@ const client = new Client(config);
 function connect() {
   client
     .connect()
-    .then(() => client.query("LISTEN api_channel"))
+    .then(() => {
+      logger.info("Database connected. Listening...");
+      client.query("LISTEN api_channel");
+    })
     .catch((err) => {
-      logger.error(err.message);
+      logger.error(`Failed to connect to database!" ${err.message}`);
     });
 
   client.on("notification", (msg) => {
