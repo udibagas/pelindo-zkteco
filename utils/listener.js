@@ -5,15 +5,7 @@ const logger = require("../logger");
 const { moveFile } = require("./ftp");
 const { API_URL, API_USER: username, API_PASS: password } = process.env;
 
-class LogData {
-  constructor(pin, name, dev_id) {
-    this.pin = pin;
-    this.name = name;
-    this.dev_id = dev_id;
-  }
-}
-
-// last data grouped by dev_id
+// cached last data grouped by dev_id
 // lastData = {
 //   xxx: {
 //     pin: "x",
@@ -27,7 +19,21 @@ class LogData {
 // };
 
 const lastData = {};
+
+// timeoutIds = {
+//   dev_id_a: ...,
+//   dev_id_b: ...,
+//   ...,
+// }
 const timeoutIds = {};
+
+// cached devices
+// devices = {
+//   x: { id: 'x', 'name', 'x', ...},
+//   x: { id: 'x', 'name', 'x', ...},
+//   ...
+// }
+const devices = {};
 
 async function processNotification(msg, pool) {
   const data = JSON.parse(msg.payload);
@@ -105,10 +111,20 @@ async function processNotification(msg, pool) {
 }
 
 async function getDeviceById(dev_id, pool) {
+  const cachedDevice = devices[dev_id];
+
+  if (cachedDevice) {
+    return cachedDevice;
+  }
+
   const query = `SELECT ip_address FROM acc_device WHERE id = $1 `;
   const { rows, rowCount } = await pool.query(query, [dev_id]);
   if (rowCount === 0) throw new Error("Device not found");
-  return rows[0];
+  const device = rows[0];
+
+  // cache to memory
+  devices[dev_id] = device;
+  return device;
 }
 
 async function saveLog(data, logResult, pool) {
