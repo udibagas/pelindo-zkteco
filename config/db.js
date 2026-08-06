@@ -1,7 +1,25 @@
+require("dotenv").config();
 const { Pool, Client } = require("pg");
 const { processNotification } = require("../utils/listener");
 const logger = require("../logger");
-const config = require("./config");
+
+const {
+  DB_HOST: host,
+  DB_PORT: port,
+  DB_USER: user,
+  DB_PASS: password,
+  DB_NAME: database,
+} = process.env;
+
+const config = {
+  host,
+  port: +port,
+  user,
+  password,
+  database,
+  idleTimeoutMillis: 100,
+  connectionTimeoutMillis: 1000,
+};
 
 const pool = new Pool(config);
 const client = new Client(config);

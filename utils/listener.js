@@ -35,6 +35,14 @@ const timeoutIds = {};
 // }
 const devices = {};
 
+class LogData {
+  constructor({ pin, name, dev_id }) {
+    this.pin = pin;
+    this.name = name;
+    this.dev_id = dev_id;
+  }
+}
+
 async function processNotification(msg, pool) {
   const data = JSON.parse(msg.payload);
 
@@ -58,26 +66,24 @@ async function processNotification(msg, pool) {
     return "Duplicate data. Skipped.";
   }
 
-  // data baru
-  lastData[dev_id].pin = pin;
-  lastData[dev_id].name = name;
-  lastData[dev_id].dev_id = dev_id;
+  // new data, update lastData
+  lastData[dev_id] = new LogData({ pin, name, dev_id });
 
-  // clear timeout kalau ada data yang baru
+  // clear timeout if exists
   if (timeoutIds[dev_id]) {
     clearTimeout(timeoutIds[dev_id]);
+    timeoutIds[dev_id] = null;
   }
 
   // reset data after 5 minutes
   timeoutIds[dev_id] = setTimeout(() => {
-    lastData[dev_id].pin = "";
-    lastData[dev_id].name = "";
-    lastData[dev_id].dev_id = "";
+    lastData[dev_id] = {};
   }, 60_000 * 5);
 
+  // create log result
   const logResult = LogResult.create(data);
 
-  // pakai promise biar ga blocking
+  // use promise chain to avoid blocking the main thread
   getDeviceById(data.dev_id, pool)
     .then((device) => {
       return getSnapshot(device.ip_address, logResult.photopath);
