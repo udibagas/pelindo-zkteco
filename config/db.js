@@ -44,7 +44,7 @@ function connect() {
   client.on("error", (err) => {
     logger.error(err.message);
     client.removeAllListeners();
-    setTimeout(() => connect, 3000);
+    setTimeout(() => connect(), 3000);
   });
 }
 
