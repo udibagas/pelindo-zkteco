@@ -17,8 +17,8 @@ const config = {
   user,
   password,
   database,
-  idleTimeoutMillis: 100,
-  connectionTimeoutMillis: 1000,
+  idleTimeoutMillis: 1000,
+  connectionTimeoutMillis: 10_000,
 };
 
 const pool = new Pool(config);

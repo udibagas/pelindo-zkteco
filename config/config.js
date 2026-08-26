@@ -14,8 +14,8 @@ const config = {
   user,
   password,
   database,
-  idleTimeoutMillis: 100,
-  connectionTimeoutMillis: 1000,
+  idleTimeoutMillis: 1_000,
+  connectionTimeoutMillis: 10_000,
 };
 
 module.exports = config;
