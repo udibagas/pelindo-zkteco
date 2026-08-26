@@ -32,13 +32,53 @@
         if (res.statusText !== "OK") return;
         const cameras = await res.json();
 
-        for (const camera of cameras) {
-          await loadPlayer({
+        // Track reconnection attempts per camera
+        const reconnectState = {};
+
+        function setupCamera(camera) {
+          const cameraId = camera.id;
+          
+          if (!reconnectState[cameraId]) {
+            reconnectState[cameraId] = {
+              attempts: 0,
+              timeoutId: null
+            };
+          }
+
+          const state = reconnectState[cameraId];
+
+          loadPlayer({
             url: `ws://<%=host%>/api/stream?ip_address=${camera.ip_address}`,
-            canvas: document.getElementById(`canvas${camera.id}`),
-            onDisconnect: () => console.log("Disconnected"),
+            canvas: document.getElementById(`canvas${cameraId}`),
+            onDisconnect: () => {
+              console.log(`Camera ${camera.dev_alias} disconnected`);
+              
+              // Clear any existing reconnect timeout
+              if (state.timeoutId) {
+                clearTimeout(state.timeoutId);
+              }
+
+              // Keep reconnecting every 3 seconds
+              state.attempts++;
+              console.log(`Attempting to reconnect camera ${camera.dev_alias} in 3s (attempt ${state.attempts})`);
+              
+              state.timeoutId = setTimeout(() => {
+                setupCamera(camera);
+              }, 3000);
+            },
             audio: false,
+          }).then(() => {
+            // Reset attempts on successful connection
+            state.attempts = 0;
+            console.log(`Camera ${camera.dev_alias} connected successfully`);
+          }).catch((error) => {
+            console.error(`Error loading camera ${camera.dev_alias}:`, error);
           });
+        }
+
+        // Initialize all cameras
+        for (const camera of cameras) {
+          setupCamera(camera);
         }
       })();
     </script>
