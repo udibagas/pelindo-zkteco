@@ -33,6 +33,8 @@ function connect() {
     })
     .catch((err) => {
       logger.error(`Failed to connect to database!" ${err.message}`);
+      console.log("Retrying database connection in 3 seconds...");
+      setTimeout(() => connect(), 3000);
     });
 
   client.on("notification", (msg) => {
@@ -44,6 +46,7 @@ function connect() {
   client.on("error", (err) => {
     logger.error(err.message);
     client.removeAllListeners();
+    console.log("Retrying database connection in 3 seconds...");
     setTimeout(() => connect(), 3000);
   });
 }

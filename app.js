@@ -47,9 +47,9 @@ app.ws("/api/stream", (ws, req) => {
     }
   }, 30000); // Every 30 seconds
 
-  ws.on("pong", () => {
-    logger.debug(`Pong received from ${ip_address}`);
-  });
+  // ws.on("pong", () => {
+  //   logger.debug(`Pong received from ${ip_address}`);
+  // });
 
   return proxyInstance;
 });
