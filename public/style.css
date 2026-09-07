@@ -204,6 +204,11 @@ button.btn-error {
   color: white;
 }
 
+button.btn-warning {
+  background-color: orange;
+  color: white;
+}
+
 .btn.btn-circle {
   width: 35px;
   border-radius: 50%;
