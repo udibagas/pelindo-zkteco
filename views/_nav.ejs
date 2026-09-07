@@ -8,6 +8,15 @@
     Transaction Logs
   </a>
 
+  <button
+    class="btn btn-error"
+    style="margin: 0 10px"
+    type="button"
+    onclick="reconnectListener()"
+  >
+    Reconnect Listener
+  </button>
+
   <span
     id="time"
     style="font-size: 16px; color: yellow; margin-left: 10px"
@@ -23,4 +32,20 @@
 
   setInterval(updateTime, 1000);
   updateTime();
+
+  function reconnectListener() {
+    fetch("/reconnect-listener", { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Listener reconnected successfully");
+        } else {
+          alert("Failed to reconnect listener");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Error reconnecting listener");
+      });
+  }
 </script>

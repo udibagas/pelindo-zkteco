@@ -90,7 +90,7 @@ a.active {
 }
 
 .container-fluid {
-  width: 80%;
+  width: 95%;
   margin: 20px auto;
 }
 
@@ -196,6 +196,11 @@ a.btn {
 button.btn-primary,
 a.btn.btn-primary {
   background-color: rgb(48, 48, 198);
+  color: white;
+}
+
+button.btn-error {
+  background-color: red;
   color: white;
 }
 
