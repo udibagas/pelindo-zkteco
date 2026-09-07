@@ -14,6 +14,17 @@
     type="button"
     onclick="reconnectListener()"
   >
+    <span
+      id="listener-status"
+      style="
+        background-color: green;
+        margin-right: 5px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      "
+    ></span>
     Reconnect Listener
   </button>
 
@@ -48,4 +59,25 @@
         alert("Error reconnecting listener");
       });
   }
+
+  function updateListenerStatus() {
+    fetch("/listener-status")
+      .then((res) => res.json())
+      .then((data) => {
+        const statusElement = document.getElementById("listener-status");
+        if (data.success) {
+          statusElement.style.backgroundColor = "green";
+        } else {
+          statusElement.style.backgroundColor = "red";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        document.getElementById("listener-status").style.backgroundColor =
+          "red";
+      });
+  }
+
+  setInterval(updateListenerStatus, 5000);
+  updateListenerStatus();
 </script>

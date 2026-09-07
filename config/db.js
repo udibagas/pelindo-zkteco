@@ -48,4 +48,4 @@ async function connect() {
 
 connect();
 
-module.exports = { pool, connect };
+module.exports = { pool, connect, client };
