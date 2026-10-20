@@ -1,0 +1,1 @@
+ALTER TABLE api_logs ADD COLUMN dept_name VARCHAR(255);

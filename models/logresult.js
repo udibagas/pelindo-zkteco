@@ -1,21 +1,23 @@
 const moment = require("moment");
 
 class LogResult {
-  constructor(
+  constructor({
     id,
     device_id,
     time,
     driver_id,
     driver_name,
+    dept_name,
     photopath,
     certificate_number = "",
-    is_match = true
-  ) {
+    is_match = true,
+  }) {
     this.id = id;
     this.device_id = device_id;
     this.time = moment(time).format("YYYY-MM-DD HH:mm:ss");
     this.driver_id = driver_id;
     this.driver_name = driver_name;
+    this.dept_name = dept_name;
     this.photopath = this.generatePath(photopath);
     this.certificate_number = certificate_number;
     this.is_match = is_match;
@@ -33,16 +35,18 @@ class LogResult {
     event_time: time,
     pin: driver_id,
     name: driver_name,
+    dept_name,
     vid_linkage_handle: photopath,
   }) {
-    return new LogResult(
+    return new LogResult({
       id,
       device_id,
       time,
       driver_id,
       driver_name,
-      photopath
-    );
+      dept_name,
+      photopath,
+    });
   }
 }
 

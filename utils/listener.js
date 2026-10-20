@@ -136,8 +136,8 @@ async function getDeviceById(dev_id, pool) {
 async function saveLog(data, logResult, pool) {
   const query = `
     INSERT INTO "api_logs"
-      (log_id, time, device_id, driver_id, driver_name, raw_log, api_payload)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+      (log_id, time, device_id, driver_id, driver_name, dept_name, raw_log, api_payload)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING *
   `;
 
@@ -147,6 +147,7 @@ async function saveLog(data, logResult, pool) {
     logResult.device_id,
     logResult.driver_id,
     logResult.driver_name,
+    logResult.dept_name,
     data,
     logResult,
   ]);
