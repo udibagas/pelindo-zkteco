@@ -83,6 +83,7 @@ function renderTableData(rows) {
         <td>${new Date(r.Time).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}</td>
         <td>${r.Gate}</td>
         <td>${r["Driver Name"]}</td>
+        <td>${r["Department"]}</td>
         <td>${r["Driver ID"]}</td>
     `;
 

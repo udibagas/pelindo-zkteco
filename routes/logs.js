@@ -24,6 +24,7 @@ router.get("/logs", async (req, res) => {
       time AS "Time",
       device_id  AS "Gate",
       driver_name AS "Driver Name",
+      dept_name AS "Department",
       driver_id AS "Driver ID",
       response_status AS status
     FROM "api_logs"

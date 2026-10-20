@@ -62,6 +62,7 @@
                 <th>Time In</th>
                 <th>Gate</th>
                 <th>Driver Name</th>
+                <th>Department</th>
                 <th>Driver ID</th>
               </tr>
             </thead>
@@ -71,6 +72,7 @@
                   <td><%= r.Time.toLocaleString('id-ID') %></td>
                   <td><%= r.Gate %></td>
                   <td><%= r["Driver Name"] %></td>
+                  <td><%= r["Department"] %></td>
                   <td><%= r["Driver ID"] %></td>
                 </tr>
               <% }) %>

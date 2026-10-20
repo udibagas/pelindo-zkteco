@@ -83,6 +83,7 @@
                   <th>Time In</th>
                   <th>Gate</th>
                   <th>Driver Name</th>
+                  <th>Department</th>
                   <th>Driver ID</th>
                   <th style="text-align: center;">API Response Status</th>
                 </tr>
@@ -93,6 +94,7 @@
                     <td><%= r.Time.toLocaleString('id-ID') %></td>
                     <td><%= r.Gate %></td>
                     <td><%= r["Driver Name"] %></td>
+                    <td><%= r["Department"] %></td>
                     <td><%= r["Driver ID"] %></td>
                     <td style="text-align: center;">
                       <span class="status <%= r.status === true ? 'success' : r.status === false ? 'failed' : 'pending' %>">
@@ -138,6 +140,10 @@
               <tr>
                 <td style="font-weight: bold;">Driver Name</td>
                 <td id="driver_name"></td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Department</td>
+                <td id="dept_name"></td>
               </tr>
               <tr>
                 <td style="font-weight: bold;">Driver ID</td>
@@ -210,6 +216,7 @@
             const snapshotEl = document.querySelector('#snapshot');
             const driverIdEl = document.querySelector('#driver_id');
             const driverNameEl = document.querySelector('#driver_name');
+            const deptNameEl = document.querySelector('#dept_name');
             const apiResponseEl = document.querySelector('#api_response');
             const responseStatusEl = document.querySelector('#response_status');
             const rawLogEl = document.querySelector('#raw_log');
@@ -221,6 +228,7 @@
             snapshotEl.setAttribute('src', data.snapshotUrl)
             driverIdEl.innerHTML = data.driver_id;
             driverNameEl.innerHTML = data.driver_name;
+            deptNameEl.innerHTML = data.dept_name;
             apiResponseEl.innerHTML = JSON.stringify(data.api_response, null, 2);
             responseStatusEl.innerHTML = data.response_status;
             rawLogEl.innerHTML = JSON.stringify(data.raw_log, null, 2);

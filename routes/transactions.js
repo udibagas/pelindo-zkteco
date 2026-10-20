@@ -23,6 +23,7 @@ router.get("/transactions", async (req, res) => {
       event_time AS "Time",
       dev_alias AS "Gate",
       name AS "Driver Name",
+      dept_name AS "Department",
       pin AS "Driver ID"
     FROM "acc_transaction"
   `;
@@ -101,6 +102,7 @@ router.get("/transactions", async (req, res) => {
           Time: r.Time.toLocaleString("id-ID"),
           Gate: r.Gate,
           "Driver Name": r["Driver Name"],
+          Department: r["Department"],
           "Driver ID": r["Driver ID"],
         })),
         false,
