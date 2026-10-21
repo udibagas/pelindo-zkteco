@@ -60,7 +60,7 @@ async function getImage(filename) {
     const mimeType = getMimeType(ext);
     return `data:${mimeType};base64,${base64Data}`;
   } catch (err) {
-    console.error(err.message);
+    console.error("Error fetching image:", err.message);
     return "/avatar.png";
   }
 }

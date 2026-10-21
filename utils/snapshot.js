@@ -8,6 +8,7 @@ async function getSnapshot(ip_address, filepath) {
       const dir = filepath.split("/").slice(0, -1).join("/");
       fs.mkdirSync(dir, { recursive: true });
     } catch (error) {
+      console.error("Error creating directory:", error.message);
       return reject(error);
     }
 
@@ -26,7 +27,10 @@ async function getSnapshot(ip_address, filepath) {
         "1000000", // Reduce probe size
       ])
       .on("start", (cmd) => logger.info("Taking snapshot..."))
-      .on("error", (err) => reject(err))
+      .on("error", (err) => {
+        console.error("Error taking snapshot:", err.message);
+        reject(err);
+      })
       .on("end", () => resolve("Snapshot taken"))
       .save(`./${filepath}`);
   });
